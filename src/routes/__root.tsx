@@ -72,14 +72,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "ROBÔ DE VENDAS AUTOMÁTICO" },
+      { name: "description", content: "ALGUNS CLIQUES RÁPIDOS E SEU ANÚNCIO ESTÁ NO AR, DE FORMA SIMPLES E PRECISAR APRENDER E SEM PROMESSAS MIRABOLANTES." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "ROBÔ DE VENDAS AUTOMÁTICO" },
+      { property: "og:description", content: "ALGUNS CLIQUES RÁPIDOS E SEU ANÚNCIO ESTÁ NO AR, DE FORMA SIMPLES E PRECISAR APRENDER E SEM PROMESSAS MIRABOLANTES." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "ROBÔ DE VENDAS AUTOMÁTICO" },
+      { name: "twitter:description", content: "ALGUNS CLIQUES RÁPIDOS E SEU ANÚNCIO ESTÁ NO AR, DE FORMA SIMPLES E PRECISAR APRENDER E SEM PROMESSAS MIRABOLANTES." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0bd73d98-3018-4d19-9c4d-3ee110a36169/id-preview-7ecc69dc--a23b4819-b5fe-4efb-8929-b0fa705a42fe.lovable.app-1779252823719.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0bd73d98-3018-4d19-9c4d-3ee110a36169/id-preview-7ecc69dc--a23b4819-b5fe-4efb-8929-b0fa705a42fe.lovable.app-1779252823719.png" },
     ],
     links: [
       {
