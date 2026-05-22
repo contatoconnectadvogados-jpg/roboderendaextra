@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
-import { NotificationBar } from "@/components/NotificationBar";
+import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
 
 export const Route = createFileRoute("/")({
@@ -31,6 +31,7 @@ function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
+      <TopNotificationBar />
       <Hero />
       <NotificationBar />
       <ComparisonSection />
