@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import {
   Store, Package, Smartphone, MessageCircle, Star, Check, X,
   ArrowRight, Sparkles, Zap, Target, Shield, Clock, TrendingUp,
-  ChevronDown, Bot, Heart, Users,
+  ChevronDown, Bot, Heart, Users, Quote,
 } from "lucide-react";
+
+const CHECKOUT_URL = "https://pay.kiwify.com.br/9MUsEuh";
 import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
