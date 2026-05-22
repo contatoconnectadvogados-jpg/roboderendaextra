@@ -55,8 +55,8 @@ function Hero() {
       <div className="absolute inset-0 bg-grid opacity-40" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-foreground/90">
-            <Sparkles className="h-3.5 w-3.5 text-gold" />
+          <span className="glass inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-foreground/90 md:text-base">
+            <Sparkles className="h-4 w-4 text-gold md:h-5 md:w-5" />
             A verdade sobre anúncios online que ninguém te conta
           </span>
           <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl lg:text-6xl">
