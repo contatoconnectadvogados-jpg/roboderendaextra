@@ -22,8 +22,10 @@ export function SiteHeader() {
         <motion.a
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
-          href="#preco"
-          className="rounded-xl px-5 py-2.5 text-sm font-semibold text-cta-foreground shadow-[var(--shadow-cta)]"
+          href="https://pay.kiwify.com.br/9MUsEuh"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-center text-sm font-semibold leading-tight text-cta-foreground shadow-[var(--shadow-cta)]"
           style={{ background: "var(--gradient-cta)" }}
         >
           Começar agora
