@@ -75,12 +75,14 @@ function Hero() {
           <motion.a
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            href="#preco"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl px-7 py-4 text-base font-bold text-cta-foreground shadow-[var(--shadow-cta)]"
+            href={CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-7 py-4 text-center text-base font-bold leading-tight text-cta-foreground shadow-[var(--shadow-cta)]"
             style={{ background: "var(--gradient-cta)" }}
           >
-            Quero Simplificar Minhas Vendas Agora
-            <ArrowRight className="h-5 w-5" />
+            <span>Quero Simplificar Minhas Vendas Agora</span>
+            <ArrowRight className="h-5 w-5 flex-shrink-0" />
           </motion.a>
 
           <div className="mt-5 flex items-center gap-3">
