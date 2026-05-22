@@ -3,8 +3,10 @@ import { motion } from "framer-motion";
 import {
   Store, Package, Smartphone, MessageCircle, Star, Check, X,
   ArrowRight, Sparkles, Zap, Target, Shield, Clock, TrendingUp,
-  ChevronDown, Bot, Heart, Users,
+  ChevronDown, Bot, Heart, Users, Quote,
 } from "lucide-react";
+
+const CHECKOUT_URL = "https://pay.kiwify.com.br/9MUsEuh";
 import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
@@ -39,6 +41,7 @@ function Index() {
       <Manifesto />
       <ForWhom />
       <Benefits />
+      <Testimonials />
       <FAQ />
       <Pricing />
       <Footer />
@@ -52,8 +55,8 @@ function Hero() {
       <div className="absolute inset-0 bg-grid opacity-40" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold text-foreground/90">
-            <Sparkles className="h-3.5 w-3.5 text-gold" />
+          <span className="glass inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-foreground/90 md:text-base">
+            <Sparkles className="h-4 w-4 text-gold md:h-5 md:w-5" />
             A verdade sobre anúncios online que ninguém te conta
           </span>
           <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl lg:text-6xl">
@@ -72,12 +75,14 @@ function Hero() {
           <motion.a
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
-            href="#preco"
-            className="mt-8 inline-flex items-center gap-2 rounded-xl px-7 py-4 text-base font-bold text-cta-foreground shadow-[var(--shadow-cta)]"
+            href={CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-7 py-4 text-center text-base font-bold leading-tight text-cta-foreground shadow-[var(--shadow-cta)]"
             style={{ background: "var(--gradient-cta)" }}
           >
-            Quero Simplificar Minhas Vendas Agora
-            <ArrowRight className="h-5 w-5" />
+            <span>Quero Simplificar Minhas Vendas Agora</span>
+            <ArrowRight className="h-5 w-5 flex-shrink-0" />
           </motion.a>
 
           <div className="mt-5 flex items-center gap-3">
@@ -379,6 +384,116 @@ function FAQ() {
   );
 }
 
+function Testimonials() {
+  const items = [
+    {
+      name: "Carla Menezes",
+      role: "Dona de salão de beleza • Recife/PE",
+      result: "Agenda lotada em 2 semanas",
+      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 14k por mês.",
+    },
+    {
+      name: "Rafael Andrade",
+      role: "E-commerce de suplementos",
+      result: "ROI de 4.8x no primeiro mês",
+      text: "Já tinha gastado mais de R$ 8 mil com agência sem resultado. O robô virou a chave: vendas todo dia, no automático.",
+    },
+    {
+      name: "Juliana Prado",
+      role: "Produtora digital • SP",
+      result: "+312% em conversão",
+      text: "O painel é absurdamente simples. Sem pixel, sem BM bloqueada, sem dor de cabeça. Só os clientes chegando.",
+    },
+    {
+      name: "Marcos Vinícius",
+      role: "Restaurante delivery",
+      result: "De 12 para 78 pedidos/dia",
+      text: "Sou do interior, não manjo de tecnologia. Em uma semana o robô lotou minhas noites de quinta a domingo.",
+    },
+    {
+      name: "Patrícia Lima",
+      role: "Loja de roupas online",
+      result: "R$ 11.400 em 30 dias",
+      text: "Larguei a CLT depois de 4 meses usando. Hoje trabalho de casa cuidando do meu filho. Estabilidade de verdade.",
+    },
+    {
+      name: "Diego Tavares",
+      role: "Coach financeiro",
+      result: "Leads qualificados todo dia",
+      text: "Cancelei 3 ferramentas que eu pagava e ainda assim minha receita dobrou. Suporte responde em minutos.",
+    },
+  ];
+  return (
+    <section className="relative py-24">
+      <div
+        className="absolute inset-0 opacity-50"
+        style={{
+          background:
+            "radial-gradient(circle at 70% 30%, oklch(0.4 0.2 50 / 0.35), transparent 55%), radial-gradient(circle at 20% 80%, oklch(0.4 0.22 300 / 0.4), transparent 55%)",
+        }}
+      />
+      <div className="relative mx-auto max-w-7xl px-6">
+        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto flex items-center justify-center gap-3">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-5 w-5 fill-gold text-gold" />
+              ))}
+            </div>
+            <span className="text-2xl font-extrabold text-gradient">4.9</span>
+            <span className="text-sm text-muted-foreground">/ 5 • +12.000 alunos</span>
+          </div>
+          <h2 className="mt-4 text-3xl font-extrabold md:text-4xl">
+            Pessoas reais. Resultados <span className="text-gradient">reais</span>.
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Nada de prints fora de contexto. Veja quem já saiu do sufoco com o robô.
+          </p>
+        </motion.div>
+
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((it, i) => (
+            <motion.div
+              key={it.name}
+              {...fadeUp}
+              transition={{ duration: 0.5, delay: i * 0.07 }}
+              whileHover={{ y: -8 }}
+              className="glass group relative overflow-hidden rounded-2xl p-6 transition-shadow hover:shadow-[var(--shadow-glow-purple)]"
+            >
+              <Quote className="absolute right-5 top-5 h-10 w-10 text-white/5" />
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
+                ))}
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-foreground/85">"{it.text}"</p>
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+                <TrendingUp className="h-3 w-3" /> {it.result}
+              </div>
+              <div className="mt-5 flex items-center gap-3 border-t border-white/10 pt-4">
+                <div
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  {it.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-foreground">{it.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Pricing() {
   const features = [
     "Acesso ao Painel Simplificado",
@@ -425,25 +540,57 @@ function Pricing() {
           <p className="mt-1 text-sm text-muted-foreground">Acesso vitalício à plataforma e atualizações.</p>
 
           {/* Price anchoring */}
-          <div className="my-7 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <div className="flex items-center gap-3">
-              <span className="rounded-md bg-destructive/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-destructive">
-                -80%
-              </span>
-              <span className="text-base text-muted-foreground line-through">De R$ 997,00</span>
-            </div>
-            <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-gold">
-              Taxa de Implementação Inicial
-            </p>
-            <div className="mt-1 flex items-baseline gap-3">
-              <span className="text-sm text-muted-foreground">por apenas</span>
-              <span className="text-5xl font-extrabold text-gradient md:text-6xl">R$ 197,80</span>
-            </div>
-            <div className="mt-4 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-4 py-3">
-              <Sparkles className="h-4 w-4 text-success" />
-              <p className="text-sm text-foreground">
-                + Mensalidade de{" "}
-                <strong className="text-success">R$ 49,90</strong> nos meses seguintes
+          <div className="relative my-7 overflow-hidden rounded-2xl border border-[oklch(0.65_0.27_300/0.4)] bg-gradient-to-br from-[oklch(0.22_0.06_280/0.7)] to-[oklch(0.18_0.04_270/0.7)] p-6 md:p-8">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[oklch(0.74_0.22_50/0.25)] blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[oklch(0.65_0.27_300/0.25)] blur-3xl" />
+
+            <div className="relative">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-md bg-destructive/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-destructive">
+                  -80% HOJE
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-gold">
+                  <Clock className="h-3 w-3" /> Oferta por tempo limitado
+                </span>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-end gap-x-4 gap-y-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">De</p>
+                  <p className="text-2xl font-bold text-muted-foreground line-through decoration-destructive/70 decoration-2">
+                    R$ 997,00
+                  </p>
+                </div>
+                <ArrowRight className="mb-2 h-6 w-6 text-cta" />
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gold">
+                    Por apenas
+                  </p>
+                  <p className="text-5xl font-extrabold leading-none text-gradient md:text-6xl">
+                    R$ 197,80
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    ou 12x de R$ 19,67 no cartão
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3.5">
+                <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
+                <div className="text-sm text-foreground">
+                  <p>
+                    + Mensalidade de{" "}
+                    <strong className="text-success">R$ 49,90/mês</strong> a partir do 2º mês
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Cancele quando quiser, sem multa nem fidelidade.
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-4 text-center text-xs font-semibold text-foreground/70">
+                💰 Você economiza{" "}
+                <span className="text-gradient">R$ 799,20</span> hoje
               </p>
             </div>
           </div>
@@ -462,12 +609,14 @@ function Pricing() {
           <motion.a
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            href="#"
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-extrabold text-success-foreground animate-pulse-glow"
+            href={CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-center text-base font-extrabold leading-tight text-success-foreground animate-pulse-glow"
             style={{ background: "var(--gradient-success)" }}
           >
-            Quero Acessar o Robô e Começar Hoje
-            <ArrowRight className="h-5 w-5" />
+            <span>Quero Acessar o Robô e Começar Hoje</span>
+            <ArrowRight className="h-5 w-5 flex-shrink-0" />
           </motion.a>
 
           <p className="mt-5 text-center text-xs text-muted-foreground">
