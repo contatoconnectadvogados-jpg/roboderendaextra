@@ -540,25 +540,57 @@ function Pricing() {
           <p className="mt-1 text-sm text-muted-foreground">Acesso vitalício à plataforma e atualizações.</p>
 
           {/* Price anchoring */}
-          <div className="my-7 rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-            <div className="flex items-center gap-3">
-              <span className="rounded-md bg-destructive/15 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-destructive">
-                -80%
-              </span>
-              <span className="text-base text-muted-foreground line-through">De R$ 997,00</span>
-            </div>
-            <p className="mt-3 text-xs font-semibold uppercase tracking-wider text-gold">
-              Taxa de Implementação Inicial
-            </p>
-            <div className="mt-1 flex items-baseline gap-3">
-              <span className="text-sm text-muted-foreground">por apenas</span>
-              <span className="text-5xl font-extrabold text-gradient md:text-6xl">R$ 197,80</span>
-            </div>
-            <div className="mt-4 flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 px-4 py-3">
-              <Sparkles className="h-4 w-4 text-success" />
-              <p className="text-sm text-foreground">
-                + Mensalidade de{" "}
-                <strong className="text-success">R$ 49,90</strong> nos meses seguintes
+          <div className="relative my-7 overflow-hidden rounded-2xl border border-[oklch(0.65_0.27_300/0.4)] bg-gradient-to-br from-[oklch(0.22_0.06_280/0.7)] to-[oklch(0.18_0.04_270/0.7)] p-6 md:p-8">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[oklch(0.74_0.22_50/0.25)] blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[oklch(0.65_0.27_300/0.25)] blur-3xl" />
+
+            <div className="relative">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-md bg-destructive/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-destructive">
+                  -80% HOJE
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-gold">
+                  <Clock className="h-3 w-3" /> Oferta por tempo limitado
+                </span>
+              </div>
+
+              <div className="mt-5 flex flex-wrap items-end gap-x-4 gap-y-3">
+                <div>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground">De</p>
+                  <p className="text-2xl font-bold text-muted-foreground line-through decoration-destructive/70 decoration-2">
+                    R$ 997,00
+                  </p>
+                </div>
+                <ArrowRight className="mb-2 h-6 w-6 text-cta" />
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-gold">
+                    Por apenas
+                  </p>
+                  <p className="text-5xl font-extrabold leading-none text-gradient md:text-6xl">
+                    R$ 197,80
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    ou 12x de R$ 19,67 no cartão
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-6 flex items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3.5">
+                <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
+                <div className="text-sm text-foreground">
+                  <p>
+                    + Mensalidade de{" "}
+                    <strong className="text-success">R$ 49,90/mês</strong> a partir do 2º mês
+                  </p>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    Cancele quando quiser, sem multa nem fidelidade.
+                  </p>
+                </div>
+              </div>
+
+              <p className="mt-4 text-center text-xs font-semibold text-foreground/70">
+                💰 Você economiza{" "}
+                <span className="text-gradient">R$ 799,20</span> hoje
               </p>
             </div>
           </div>
@@ -577,12 +609,14 @@ function Pricing() {
           <motion.a
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            href="#"
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl py-4 text-base font-extrabold text-success-foreground animate-pulse-glow"
+            href={CHECKOUT_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-center text-base font-extrabold leading-tight text-success-foreground animate-pulse-glow"
             style={{ background: "var(--gradient-success)" }}
           >
-            Quero Acessar o Robô e Começar Hoje
-            <ArrowRight className="h-5 w-5" />
+            <span>Quero Acessar o Robô e Começar Hoje</span>
+            <ArrowRight className="h-5 w-5 flex-shrink-0" />
           </motion.a>
 
           <p className="mt-5 text-center text-xs text-muted-foreground">
