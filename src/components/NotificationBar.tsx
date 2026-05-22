@@ -19,7 +19,7 @@ export function NotificationBar({
 
   const sizeClasses =
     size === "sm"
-      ? "h-12 w-auto sm:h-14 md:h-16"
+      ? "h-16 w-auto sm:h-20 md:h-24 lg:h-28"
       : "h-16 w-auto sm:h-20 md:h-24 lg:h-28";
 
   return (
