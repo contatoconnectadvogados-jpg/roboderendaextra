@@ -41,6 +41,7 @@ function Index() {
       <Manifesto />
       <ForWhom />
       <Benefits />
+      <Testimonials />
       <FAQ />
       <Pricing />
       <Footer />
