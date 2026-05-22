@@ -384,6 +384,116 @@ function FAQ() {
   );
 }
 
+function Testimonials() {
+  const items = [
+    {
+      name: "Carla Menezes",
+      role: "Dona de salão de beleza • Recife/PE",
+      result: "Agenda lotada em 2 semanas",
+      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 14k por mês.",
+    },
+    {
+      name: "Rafael Andrade",
+      role: "E-commerce de suplementos",
+      result: "ROI de 4.8x no primeiro mês",
+      text: "Já tinha gastado mais de R$ 8 mil com agência sem resultado. O robô virou a chave: vendas todo dia, no automático.",
+    },
+    {
+      name: "Juliana Prado",
+      role: "Produtora digital • SP",
+      result: "+312% em conversão",
+      text: "O painel é absurdamente simples. Sem pixel, sem BM bloqueada, sem dor de cabeça. Só os clientes chegando.",
+    },
+    {
+      name: "Marcos Vinícius",
+      role: "Restaurante delivery",
+      result: "De 12 para 78 pedidos/dia",
+      text: "Sou do interior, não manjo de tecnologia. Em uma semana o robô lotou minhas noites de quinta a domingo.",
+    },
+    {
+      name: "Patrícia Lima",
+      role: "Loja de roupas online",
+      result: "R$ 11.400 em 30 dias",
+      text: "Larguei a CLT depois de 4 meses usando. Hoje trabalho de casa cuidando do meu filho. Estabilidade de verdade.",
+    },
+    {
+      name: "Diego Tavares",
+      role: "Coach financeiro",
+      result: "Leads qualificados todo dia",
+      text: "Cancelei 3 ferramentas que eu pagava e ainda assim minha receita dobrou. Suporte responde em minutos.",
+    },
+  ];
+  return (
+    <section className="relative py-24">
+      <div
+        className="absolute inset-0 opacity-50"
+        style={{
+          background:
+            "radial-gradient(circle at 70% 30%, oklch(0.4 0.2 50 / 0.35), transparent 55%), radial-gradient(circle at 20% 80%, oklch(0.4 0.22 300 / 0.4), transparent 55%)",
+        }}
+      />
+      <div className="relative mx-auto max-w-7xl px-6">
+        <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto flex items-center justify-center gap-3">
+            <div className="flex">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="h-5 w-5 fill-gold text-gold" />
+              ))}
+            </div>
+            <span className="text-2xl font-extrabold text-gradient">4.9</span>
+            <span className="text-sm text-muted-foreground">/ 5 • +12.000 alunos</span>
+          </div>
+          <h2 className="mt-4 text-3xl font-extrabold md:text-4xl">
+            Pessoas reais. Resultados <span className="text-gradient">reais</span>.
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Nada de prints fora de contexto. Veja quem já saiu do sufoco com o robô.
+          </p>
+        </motion.div>
+
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {items.map((it, i) => (
+            <motion.div
+              key={it.name}
+              {...fadeUp}
+              transition={{ duration: 0.5, delay: i * 0.07 }}
+              whileHover={{ y: -8 }}
+              className="glass group relative overflow-hidden rounded-2xl p-6 transition-shadow hover:shadow-[var(--shadow-glow-purple)]"
+            >
+              <Quote className="absolute right-5 top-5 h-10 w-10 text-white/5" />
+              <div className="flex items-center gap-1">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
+                ))}
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-foreground/85">"{it.text}"</p>
+              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+                <TrendingUp className="h-3 w-3" /> {it.result}
+              </div>
+              <div className="mt-5 flex items-center gap-3 border-t border-white/10 pt-4">
+                <div
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
+                  {it.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .slice(0, 2)
+                    .join("")}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-foreground">{it.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{it.role}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Pricing() {
   const features = [
     "Acesso ao Painel Simplificado",
