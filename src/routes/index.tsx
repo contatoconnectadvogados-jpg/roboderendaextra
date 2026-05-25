@@ -449,44 +449,7 @@ function Testimonials() {
           </p>
         </motion.div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((it, i) => (
-            <motion.div
-              key={it.name}
-              {...fadeUp}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
-              whileHover={{ y: -8 }}
-              className="glass group relative overflow-hidden rounded-2xl p-6 transition-shadow hover:shadow-[var(--shadow-glow-purple)]"
-            >
-              <Quote className="absolute right-5 top-5 h-10 w-10 text-white/5" />
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
-                ))}
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/85">"{it.text}"</p>
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-                <TrendingUp className="h-3 w-3" /> {it.result}
-              </div>
-              <div className="mt-5 flex items-center gap-3 border-t border-white/10 pt-4">
-                <div
-                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ background: "var(--gradient-primary)" }}
-                >
-                  {it.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-foreground">{it.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{it.role}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <TestimonialsCarousel items={items} />
       </div>
     </section>
   );
