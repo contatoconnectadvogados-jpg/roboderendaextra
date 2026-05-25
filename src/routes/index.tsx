@@ -567,22 +567,53 @@ function Pricing() {
             ))}
           </ul>
 
-          <motion.a
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            href={CHECKOUT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-center text-base font-extrabold leading-tight text-success-foreground animate-pulse-glow"
-            style={{ background: "var(--gradient-success)" }}
-          >
-            <span>Quero Acessar o Robô e Começar Hoje</span>
-            <ArrowRight className="h-5 w-5 flex-shrink-0" />
-          </motion.a>
+          <CountdownTimer />
 
-          <p className="mt-5 text-center text-xs text-muted-foreground">
-            🔒 Compra 100% Segura • ⚡ Acesso Imediato • ✓ Cancelamento Fácil
-          </p>
+          <div className="mt-6">
+            <CheckoutButton variant="success" size="lg" label="pricing" pulse>
+              Quero Acessar o Robô e Começar Hoje
+            </CheckoutButton>
+          </div>
+
+          <TrustBadges variant="pricing" />
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function TrustBadges({ variant = "hero" }: { variant?: "hero" | "pricing" }) {
+  const items = [
+    { icon: Lock, label: "Pagamentos Seguros" },
+    { icon: Headphones, label: "Suporte Rápido" },
+    { icon: RefreshCw, label: "Cancelamento Fácil" },
+    { icon: Shield, label: "Compra Protegida" },
+  ];
+  if (variant === "pricing") {
+    return (
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {items.map((it) => (
+          <div
+            key={it.label}
+            className="glass flex flex-col items-center gap-1.5 rounded-xl px-3 py-3 text-center"
+          >
+            <it.icon className="h-5 w-5 text-success" />
+            <span className="text-[11px] font-semibold text-foreground/85">{it.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+      {items.slice(0, 3).map((it) => (
+        <span key={it.label} className="inline-flex items-center gap-1.5">
+          <it.icon className="h-3.5 w-3.5 text-success" /> {it.label}
+        </span>
+      ))}
+    </div>
+  );
+}
         </motion.div>
       </div>
     </section>
