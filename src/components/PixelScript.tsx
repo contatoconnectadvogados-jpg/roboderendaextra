@@ -1,0 +1,45 @@
+import { useEffect } from "react";
+import { useSiteConfig } from "@/lib/site-config";
+import { track } from "@/lib/analytics";
+
+export function PixelAndTracking() {
+  const { pixelId } = useSiteConfig();
+
+  // Inject Meta Pixel when pixelId changes
+  useEffect(() => {
+    if (typeof window === "undefined" || !pixelId) return;
+    const w = window as any;
+    if (w.fbq) {
+      w.fbq("init", pixelId);
+      w.fbq("track", "PageView");
+      return;
+    }
+    /* eslint-disable */
+    (function (f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
+      };
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = true;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = true;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+    w.fbq("init", pixelId);
+    w.fbq("track", "PageView");
+    /* eslint-enable */
+  }, [pixelId]);
+
+  // Track pageview once
+  useEffect(() => {
+    track({ type: "pageview", path: window.location.pathname });
+  }, []);
+
+  return null;
+}
