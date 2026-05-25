@@ -614,11 +614,6 @@ function TrustBadges({ variant = "hero" }: { variant?: "hero" | "pricing" }) {
     </div>
   );
 }
-        </motion.div>
-      </div>
-    </section>
-  );
-}
 
 function Footer() {
   return (
