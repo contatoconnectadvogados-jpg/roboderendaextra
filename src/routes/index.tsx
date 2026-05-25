@@ -3,14 +3,17 @@ import { motion } from "framer-motion";
 import {
   Store, Package, Smartphone, MessageCircle, Star, Check, X,
   ArrowRight, Sparkles, Zap, Target, Shield, Clock, TrendingUp,
-  ChevronDown, Bot, Heart, Users, Quote,
+  ChevronDown, Bot, Heart, Users, Lock, Headphones, RefreshCw,
 } from "lucide-react";
 
-const CHECKOUT_URL = "https://pay.kiwify.com.br/9MUsEuh";
 import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
+import { CheckoutButton } from "@/components/CheckoutButton";
+import { CountdownTimer } from "@/components/CountdownTimer";
+import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { PixelAndTracking } from "@/components/PixelScript";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -32,6 +35,7 @@ const fadeUp = {
 function Index() {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <PixelAndTracking />
       <SiteHeader />
       <TopNotificationBar />
       <Hero />
@@ -72,18 +76,12 @@ function Hero() {
             Para negócios físicos, produtos digitais ou WhatsApp.
           </p>
 
-          <motion.a
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            href={CHECKOUT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl px-7 py-4 text-center text-base font-bold leading-tight text-cta-foreground shadow-[var(--shadow-cta)]"
-            style={{ background: "var(--gradient-cta)" }}
-          >
-            <span>Quero Simplificar Minhas Vendas Agora</span>
-            <ArrowRight className="h-5 w-5 flex-shrink-0" />
-          </motion.a>
+          <div className="mt-8 max-w-md">
+            <CheckoutButton variant="cta" size="lg" label="hero" pulse>
+              Quero Simplificar Minhas Vendas Agora
+            </CheckoutButton>
+            <TrustBadges />
+          </div>
 
           <div className="mt-5 flex items-center gap-3">
             <div className="flex">
@@ -451,44 +449,7 @@ function Testimonials() {
           </p>
         </motion.div>
 
-        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((it, i) => (
-            <motion.div
-              key={it.name}
-              {...fadeUp}
-              transition={{ duration: 0.5, delay: i * 0.07 }}
-              whileHover={{ y: -8 }}
-              className="glass group relative overflow-hidden rounded-2xl p-6 transition-shadow hover:shadow-[var(--shadow-glow-purple)]"
-            >
-              <Quote className="absolute right-5 top-5 h-10 w-10 text-white/5" />
-              <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-gold text-gold" />
-                ))}
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-foreground/85">"{it.text}"</p>
-              <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
-                <TrendingUp className="h-3 w-3" /> {it.result}
-              </div>
-              <div className="mt-5 flex items-center gap-3 border-t border-white/10 pt-4">
-                <div
-                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-                  style={{ background: "var(--gradient-primary)" }}
-                >
-                  {it.name
-                    .split(" ")
-                    .map((n) => n[0])
-                    .slice(0, 2)
-                    .join("")}
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-bold text-foreground">{it.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{it.role}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+        <TestimonialsCarousel items={items} />
       </div>
     </section>
   );
@@ -606,25 +567,51 @@ function Pricing() {
             ))}
           </ul>
 
-          <motion.a
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            href={CHECKOUT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-4 text-center text-base font-extrabold leading-tight text-success-foreground animate-pulse-glow"
-            style={{ background: "var(--gradient-success)" }}
-          >
-            <span>Quero Acessar o Robô e Começar Hoje</span>
-            <ArrowRight className="h-5 w-5 flex-shrink-0" />
-          </motion.a>
+          <CountdownTimer />
 
-          <p className="mt-5 text-center text-xs text-muted-foreground">
-            🔒 Compra 100% Segura • ⚡ Acesso Imediato • ✓ Cancelamento Fácil
-          </p>
+          <div className="mt-6">
+            <CheckoutButton variant="success" size="lg" label="pricing" pulse>
+              Quero Acessar o Robô e Começar Hoje
+            </CheckoutButton>
+          </div>
+
+          <TrustBadges variant="pricing" />
         </motion.div>
       </div>
     </section>
+  );
+}
+
+function TrustBadges({ variant = "hero" }: { variant?: "hero" | "pricing" }) {
+  const items = [
+    { icon: Lock, label: "Pagamentos Seguros" },
+    { icon: Headphones, label: "Suporte Rápido" },
+    { icon: RefreshCw, label: "Cancelamento Fácil" },
+    { icon: Shield, label: "Compra Protegida" },
+  ];
+  if (variant === "pricing") {
+    return (
+      <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {items.map((it) => (
+          <div
+            key={it.label}
+            className="glass flex flex-col items-center gap-1.5 rounded-xl px-3 py-3 text-center"
+          >
+            <it.icon className="h-5 w-5 text-success" />
+            <span className="text-[11px] font-semibold text-foreground/85">{it.label}</span>
+          </div>
+        ))}
+      </div>
+    );
+  }
+  return (
+    <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+      {items.slice(0, 3).map((it) => (
+        <span key={it.label} className="inline-flex items-center gap-1.5">
+          <it.icon className="h-3.5 w-3.5 text-success" /> {it.label}
+        </span>
+      ))}
+    </div>
   );
 }
 

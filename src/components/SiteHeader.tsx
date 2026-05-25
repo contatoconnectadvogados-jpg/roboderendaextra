@@ -1,15 +1,15 @@
 import { Bot } from "lucide-react";
-import { motion } from "framer-motion";
+import { CheckoutButton } from "@/components/CheckoutButton";
 
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-white/10 bg-background/60 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center gap-2">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)] shadow-[var(--shadow-glow-purple)]">
             <Bot className="h-5 w-5 text-white" />
           </div>
-          <span className="text-lg font-bold text-foreground">
+          <span className="text-base font-bold text-foreground sm:text-lg">
             RoboVendas<span className="text-gradient">.IA</span>
           </span>
         </div>
@@ -19,17 +19,11 @@ export function SiteHeader() {
           <a href="#faq" className="transition-colors hover:text-foreground">FAQ</a>
           <a href="#preco" className="transition-colors hover:text-foreground">Preço</a>
         </nav>
-        <motion.a
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.97 }}
-          href="https://pay.kiwify.com.br/9MUsEuh"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-center text-sm font-semibold leading-tight text-cta-foreground shadow-[var(--shadow-cta)]"
-          style={{ background: "var(--gradient-cta)" }}
-        >
-          Começar agora
-        </motion.a>
+        <div className="w-auto">
+          <CheckoutButton size="md" variant="cta" label="header" className="!w-auto">
+            Começar agora
+          </CheckoutButton>
+        </div>
       </div>
     </header>
   );
