@@ -141,27 +141,27 @@ function ComparisonSection() {
     { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 10k–15k mensais" },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-6 py-24">
+    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-extrabold md:text-4xl">
+        <h2 className="fluid-h2 font-extrabold">
           A Diferença Entre o Mercado e o <span className="text-gradient">Nosso Robô</span>
         </h2>
         <p className="mt-3 text-muted-foreground">Veja por que pessoas comuns estão migrando dos gerenciadores complexos.</p>
       </motion.div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
-        <motion.div {...fadeUp} className="glass rounded-2xl p-7">
+      <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-6">
+        <motion.div {...fadeUp} className="glass rounded-2xl p-5 sm:p-7">
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-destructive/15 px-3 py-1 text-xs font-semibold text-destructive">
             <X className="h-3.5 w-3.5" /> O Jeito Antigo
           </div>
-          <h3 className="text-lg font-semibold text-foreground/90">O Método Que Suga Seu Tempo e Seu Dinheiro</h3>
+          <h3 className="text-base font-semibold text-foreground/90 sm:text-lg">O Método Que Suga Seu Tempo e Seu Dinheiro</h3>
           <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
             O Jeito Antigo envolve:
           </p>
           <ul className="mt-3 space-y-3">
             <li className="flex gap-3">
               <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
-              <span className="text-sm text-muted-foreground">Passar noites em claro tentando entender o que é um Pixel.</span>
+              <span className="text-sm text-muted-foreground">Passar noites em claro tentando entender o que é um <span translate="no">Pixel</span>.</span>
             </li>
             <li className="flex gap-3">
               <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
@@ -180,14 +180,19 @@ function ComparisonSection() {
 
         <motion.div
           {...fadeUp}
-          className="glass relative rounded-2xl p-7 shadow-[var(--shadow-glow-purple)]"
-          style={{ borderImage: "linear-gradient(135deg, oklch(0.78 0.2 155), oklch(0.65 0.27 300)) 1" }}
+          whileHover={{ y: -6, scale: 1.015 }}
+          whileTap={{ scale: 0.985 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          className="glow-green relative rounded-2xl border-2 p-5 sm:p-7"
+          style={{
+            background:
+              "linear-gradient(135deg, oklch(0.32 0.14 155 / 0.55), oklch(0.22 0.08 160 / 0.5))",
+          }}
         >
-          <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-success/40" />
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-success/15 px-3 py-1 text-xs font-semibold text-success">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-success/25 px-3 py-1 text-xs font-semibold text-success ring-1 ring-success/50">
             <Check className="h-3.5 w-3.5" /> Nossa Solução
           </div>
-          <h3 className="text-lg font-semibold text-foreground">O Seu Novo Robô de Vendas</h3>
+          <h3 className="text-base font-semibold text-foreground sm:text-lg" translate="no">O Seu Novo Robô de Vendas</h3>
           <ul className="mt-5 space-y-4">
             {rows.map((r, i) => (
               <li key={i} className="flex gap-3">
@@ -198,6 +203,7 @@ function ComparisonSection() {
           </ul>
         </motion.div>
       </div>
+
     </section>
   );
 }
