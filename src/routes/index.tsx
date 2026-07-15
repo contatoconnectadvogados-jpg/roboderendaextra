@@ -61,19 +61,16 @@ function Hero() {
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <span className="glass inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-foreground/90 md:text-base">
             <Sparkles className="h-4 w-4 text-gold md:h-5 md:w-5" />
-            A verdade sobre anúncios online que ninguém te conta
+            A verdade cruel sobre anúncios que os gurus escondem
           </span>
           <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl lg:text-6xl">
-            O Primeiro Robô de Vendas Automáticas e IA Focado na{" "}
-            <span className="text-gradient">Vida Real</span>.
+            A Verdade Cruel Sobre Anúncios Online Que Os Gurus Escondem De Você{" "}
+            <span className="text-gradient">(e como virar o jogo nos próximos 5 minutos)</span>.
           </h1>
-          <p className="mt-3 text-xl font-semibold text-foreground/80">
-            Sem milhões da noite para o dia. Apenas estabilidade e lucro.
-          </p>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
-            Se você cansou das promessas de "fique rico fácil" e só quer saber como ganhar dinheiro de verdade,
-            conheça a ferramenta que transforma cliques simples em campanhas profissionais de alta conversão.
-            Para negócios físicos, produtos digitais ou WhatsApp.
+            Você não precisa de cursos de 100 horas, gerenciadores confusos ou agências que sugam seu dinheiro.
+            Minha IA configura, otimiza e roda suas campanhas no piloto automático para trazer clientes reais
+            para o seu negócio — enquanto você foca no que realmente importa.
           </p>
 
           <div className="mt-8 max-w-md">
@@ -144,15 +141,28 @@ function ComparisonSection() {
           <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-destructive/15 px-3 py-1 text-xs font-semibold text-destructive">
             <X className="h-3.5 w-3.5" /> O Jeito Antigo
           </div>
-          <h3 className="text-lg font-semibold text-foreground/90">Gerenciadores Complexos</h3>
-          <ul className="mt-5 space-y-4">
-            {rows.map((r, i) => (
-              <li key={i} className="flex gap-3">
-                <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
-                <span className="text-sm text-muted-foreground">{r.old}</span>
-              </li>
-            ))}
+          <h3 className="text-lg font-semibold text-foreground/90">O Método Que Suga Seu Tempo e Seu Dinheiro</h3>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            O Jeito Antigo envolve:
+          </p>
+          <ul className="mt-3 space-y-3">
+            <li className="flex gap-3">
+              <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+              <span className="text-sm text-muted-foreground">Passar noites em claro tentando entender o que é um Pixel.</span>
+            </li>
+            <li className="flex gap-3">
+              <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+              <span className="text-sm text-muted-foreground">Ver sua conta ser bloqueada pelo Facebook sem motivo nenhum.</span>
+            </li>
+            <li className="flex gap-3">
+              <X className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+              <span className="text-sm text-muted-foreground">Ver o saldo da sua conta bancária sumir em anúncios que não trazem cliques.</span>
+            </li>
           </ul>
+          <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+            É exaustivo. É frustrante. E faz você acreditar que vender na internet não é para você.
+            Mas o erro não é seu. É da falta de um método que trabalhe por você.
+          </p>
         </motion.div>
 
         <motion.div
@@ -568,6 +578,16 @@ function Pricing() {
           </ul>
 
           <CountdownTimer />
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left">
+            <p className="text-sm leading-relaxed text-foreground/90">
+              Uma agência de tráfego cobraria de você <strong className="text-foreground">R$ 1.500 a R$ 5.000 por mês</strong> para gerenciar seus anúncios (e muitas vezes sem garantia de resultado). Ferramentas americanas complexas custam centenas de dólares.
+            </p>
+            <p className="mt-3 text-sm font-semibold text-cta">Eu faço diferente.</p>
+            <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+              Por apenas <strong className="text-foreground">R$ 197,80</strong>, você tem o poder de uma agência inteira resumida em uma tela de 3 cliques. Sem letras miúdas, sem contratos de fidelidade. Eu baixei o preço ao limite porque sei como é estar no início, querendo apenas uma renda previsível para respirar em paz.
+            </p>
+          </div>
 
           <div className="mt-6">
             <CheckoutButton variant="success" size="lg" label="pricing" pulse>
