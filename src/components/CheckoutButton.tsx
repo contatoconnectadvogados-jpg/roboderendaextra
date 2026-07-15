@@ -53,8 +53,9 @@ export function CheckoutButton({
       )}
       style={{ background: bg }}
     >
-      <span className="truncate">{children}</span>
+      <span className="min-w-0 text-center leading-tight">{children}</span>
       <ArrowRight className="h-5 w-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
     </motion.a>
   );
 }
+

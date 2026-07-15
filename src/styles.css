@@ -115,6 +115,24 @@
   100% { background-position: 200% 0; }
 }
 
+@keyframes green-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 1px oklch(0.78 0.2 155 / 0.7),
+                0 0 24px 0 oklch(0.78 0.2 155 / 0.35),
+                0 0 60px -10px oklch(0.78 0.2 155 / 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 2px oklch(0.82 0.22 155 / 0.9),
+                0 0 40px 4px oklch(0.78 0.2 155 / 0.55),
+                0 0 90px -10px oklch(0.78 0.2 155 / 0.7);
+  }
+}
+
+@keyframes yellow-glow {
+  0%, 100% { box-shadow: 0 0 0 1px oklch(0.82 0.16 88 / 0.55), 0 0 20px -4px oklch(0.82 0.16 88 / 0.35); }
+  50% { box-shadow: 0 0 0 1px oklch(0.86 0.18 88 / 0.8), 0 0 32px 0 oklch(0.82 0.16 88 / 0.55); }
+}
+
 @layer utilities {
   .glass {
     background: var(--glass-bg);
@@ -134,14 +152,29 @@
       linear-gradient(90deg, oklch(0.7 0.1 280 / 0.08) 1px, transparent 1px);
     background-size: 48px 48px;
   }
+  .glow-green {
+    animation: green-glow 2.4s ease-in-out infinite;
+    border-color: oklch(0.78 0.2 155 / 0.7) !important;
+  }
+  .glow-yellow {
+    animation: yellow-glow 3s ease-in-out infinite;
+    border-color: oklch(0.82 0.16 88 / 0.6) !important;
+  }
+  .fluid-h1 { font-size: clamp(2rem, 6vw + 0.5rem, 3.75rem); line-height: 1.05; }
+  .fluid-h2 { font-size: clamp(1.6rem, 3.5vw + 0.6rem, 2.5rem); line-height: 1.15; }
+  .fluid-lead { font-size: clamp(0.95rem, 1.2vw + 0.6rem, 1.15rem); line-height: 1.6; }
 }
 
 @layer base {
   * { border-color: var(--color-border); }
+  html, body { max-width: 100%; overflow-x: hidden; }
   html { font-family: var(--font-sans); }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
     -webkit-font-smoothing: antialiased;
   }
+  button, a[role="button"], .cta-button { min-height: 48px; }
+  h1, h2, h3, h4, p { overflow-wrap: break-word; word-wrap: break-word; hyphens: none; }
 }
+
