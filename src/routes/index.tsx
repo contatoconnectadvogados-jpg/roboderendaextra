@@ -105,23 +105,33 @@ function Hero() {
 
 function StatsBlock() {
   const stats = [
-    { v: "+12k", l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
-    { v: "R$ 38M", l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
-    { v: "4.9★", l: "Avaliação média", c: "from-[oklch(0.74_0.22_50)] to-[oklch(0.82_0.16_88)]" },
+    { end: 12480, prefix: "+", suffix: "", decimals: 0, l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
+    { end: 38, prefix: "R$ ", suffix: "M", decimals: 0, l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
+    { end: 4.9, prefix: "", suffix: "★", decimals: 1, l: "Avaliação média", c: "from-[oklch(0.74_0.22_50)] to-[oklch(0.82_0.16_88)]" },
   ];
   return (
-    <div className="glass mt-8 grid max-w-md grid-cols-3 gap-3 rounded-2xl p-4">
+    <div className="glass mt-8 grid w-full max-w-md grid-cols-3 gap-2 rounded-2xl p-3 sm:gap-3 sm:p-4">
       {stats.map((s) => (
-        <div key={s.l} className="rounded-xl bg-white/[0.03] p-3 text-center ring-1 ring-white/5">
-          <p className={`bg-gradient-to-br ${s.c} bg-clip-text text-2xl font-extrabold text-transparent`}>
-            {s.v}
-          </p>
-          <p className="mt-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground">{s.l}</p>
-        </div>
+        <motion.div
+          key={s.l}
+          whileHover={{ y: -3, scale: 1.03 }}
+          transition={{ type: "spring", stiffness: 260, damping: 18 }}
+          className="rounded-xl bg-white/[0.03] p-2.5 text-center ring-1 ring-white/5 sm:p-3"
+        >
+          <CountUp
+            end={s.end}
+            prefix={s.prefix}
+            suffix={s.suffix}
+            decimals={s.decimals}
+            className={`bg-gradient-to-br ${s.c} bg-clip-text text-lg font-extrabold text-transparent sm:text-2xl`}
+          />
+          <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground sm:text-[11px]">{s.l}</p>
+        </motion.div>
       ))}
     </div>
   );
 }
+
 
 function ComparisonSection() {
   const rows = [
