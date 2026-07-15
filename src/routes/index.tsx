@@ -58,17 +58,18 @@ function Hero() {
   return (
     <section className="relative overflow-hidden" style={{ background: "var(--gradient-hero)" }}>
       <div className="absolute inset-0 bg-grid opacity-40" />
-      <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 md:py-28 lg:grid-cols-2">
+      <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 md:py-28 lg:grid-cols-2">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-          <span className="glass inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-foreground/90 md:text-base">
+          <span className="glass inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold text-foreground/90 sm:text-sm md:text-base">
             <Sparkles className="h-4 w-4 text-gold md:h-5 md:w-5" />
             A verdade cruel sobre anúncios que os gurus escondem
           </span>
-          <h1 className="mt-5 text-4xl font-extrabold leading-tight tracking-tight md:text-5xl lg:text-6xl">
+          <h1 className="fluid-h1 mt-5 font-extrabold tracking-tight">
             A Verdade Cruel Sobre Anúncios Online Que Os Gurus Escondem De Você{" "}
             <span className="text-gradient">(e como virar o jogo nos próximos 5 minutos)</span>.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground md:text-lg">
+          <p className="fluid-lead mt-5 max-w-xl text-muted-foreground">
+
             Você não precisa de cursos de 100 horas, gerenciadores confusos ou agências que sugam seu dinheiro.
             Minha IA configura, otimiza e roda suas campanhas no piloto automático para trazer clientes reais
             para o seu negócio — enquanto você foca no que realmente importa.
