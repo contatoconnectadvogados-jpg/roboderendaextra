@@ -257,7 +257,7 @@ function HowItWorks() {
 
 function Manifesto() {
   return (
-    <section className="relative overflow-hidden py-24">
+    <section className="relative overflow-hidden py-16 sm:py-24">
       <div
         className="absolute inset-0 opacity-60"
         style={{
@@ -265,24 +265,25 @@ function Manifesto() {
             "radial-gradient(circle at 20% 30%, oklch(0.4 0.22 300 / 0.5), transparent 45%), radial-gradient(circle at 80% 70%, oklch(0.4 0.2 50 / 0.4), transparent 50%)",
         }}
       />
-      <motion.div {...fadeUp} className="relative mx-auto max-w-3xl px-6 text-center">
+      <motion.div {...fadeUp} className="relative mx-auto max-w-3xl px-4 text-center sm:px-6">
         <span className="text-7xl leading-none text-gradient">"</span>
-        <h2 className="-mt-6 text-3xl font-extrabold md:text-4xl">
+        <h2 className="fluid-h2 -mt-6 font-extrabold">
           Chega de Sensacionalismo. Vamos Falar de Como Ganhar Dinheiro de Forma{" "}
           <span className="text-gradient">Digna</span>.
         </h2>
-        <div className="mt-8 space-y-5 text-lg leading-relaxed text-foreground/80">
+        <div className="mt-8 space-y-5 text-base leading-relaxed text-foreground/80 sm:text-lg">
           <p>
             A internet está cheia de "gurus" prometendo que você vai comprar uma Ferrari no mês que vem.
-            <strong className="text-foreground"> Nós não.</strong> Nosso Robô de Vendas foi criado para pessoas normais
-            que querem sair do sufoco, deixar a CLT para trás e ter liberdade de trabalhar de onde quiserem.
+            <strong className="text-foreground"> Nós não.</strong> Nosso <span translate="no">Robô de Vendas</span> foi criado para pessoas normais
+            que querem sair do sufoco, deixar a <span translate="no">CLT</span> para trás e ter liberdade de trabalhar de onde quiserem.
           </p>
           <p>
-            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa IA, alcançar
-            <strong className="text-gradient"> R$ 10.000 a R$ 15.000 por mês</strong> não é conto de fadas — é matemática pura.
+            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa <span translate="no">IA</span>, alcançar
+            <strong className="text-gradient" translate="no"> R$ 10.000 a R$ 15.000 por mês</strong> não é conto de fadas — é matemática pura.
             É sobre ter uma renda extra que vira renda principal. É sobre ter paz.
           </p>
         </div>
+
         <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
           <span className="flex items-center gap-2"><Heart className="h-4 w-4 text-cta" /> Feito para pessoas reais</span>
           <span className="flex items-center gap-2"><Shield className="h-4 w-4 text-cta" /> Sem promessas vazias</span>
