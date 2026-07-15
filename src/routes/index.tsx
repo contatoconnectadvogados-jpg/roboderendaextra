@@ -425,7 +425,7 @@ function FAQ() {
               transition={{ duration: 0.3 }}
               className="overflow-hidden"
             >
-              <p className="px-6 pb-5 text-sm leading-relaxed text-muted-foreground">{f.a}</p>
+              <p className="px-4 pb-4 text-sm leading-relaxed text-muted-foreground sm:px-6 sm:pb-5">{f.a}</p>
             </motion.div>
           </motion.div>
         ))}
