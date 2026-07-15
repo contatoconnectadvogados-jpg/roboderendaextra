@@ -71,16 +71,17 @@ function Hero() {
           <p className="fluid-lead mt-5 max-w-xl text-muted-foreground">
 
             Você não precisa de cursos de 100 horas, gerenciadores confusos ou agências que sugam seu dinheiro.
-            Minha IA configura, otimiza e roda suas campanhas no piloto automático para trazer clientes reais
+            Minha <span translate="no">IA</span> configura, otimiza e roda suas campanhas no piloto automático para trazer clientes reais
             para o seu negócio — enquanto você foca no que realmente importa.
           </p>
 
-          <div className="mt-8 max-w-md">
+          <div className="mt-8 w-full max-w-md">
             <CheckoutButton variant="cta" size="lg" label="hero" pulse>
               Quero Simplificar Minhas Vendas Agora
             </CheckoutButton>
             <TrustBadges />
           </div>
+
 
           <div className="mt-5 flex items-center gap-3">
             <div className="flex">
