@@ -479,7 +479,7 @@ function Testimonials() {
     },
   ];
   return (
-    <section className="relative py-24">
+    <section className="relative py-16 sm:py-24">
       <div
         className="absolute inset-0 opacity-50"
         style={{
@@ -487,24 +487,25 @@ function Testimonials() {
             "radial-gradient(circle at 70% 30%, oklch(0.4 0.2 50 / 0.35), transparent 55%), radial-gradient(circle at 20% 80%, oklch(0.4 0.22 300 / 0.4), transparent 55%)",
         }}
       />
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <div className="mx-auto flex items-center justify-center gap-3">
+          <div className="mx-auto flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             <div className="flex">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="h-5 w-5 fill-gold text-gold" />
               ))}
             </div>
-            <span className="text-2xl font-extrabold text-gradient">4.9</span>
+            <span className="text-2xl font-extrabold text-gradient" translate="no">4.9</span>
             <span className="text-sm text-muted-foreground">/ 5 • +12.000 alunos</span>
           </div>
-          <h2 className="mt-4 text-3xl font-extrabold md:text-4xl">
+          <h2 className="fluid-h2 mt-4 font-extrabold">
             Pessoas reais. Resultados <span className="text-gradient">reais</span>.
           </h2>
           <p className="mt-3 text-muted-foreground">
             Nada de prints fora de contexto. Veja quem já saiu do sufoco com o robô.
           </p>
         </motion.div>
+
 
         <TestimonialsCarousel items={items} />
       </div>
