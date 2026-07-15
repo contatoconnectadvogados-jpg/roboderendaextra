@@ -14,6 +14,7 @@ import { CheckoutButton } from "@/components/CheckoutButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
 import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
 import { PixelAndTracking } from "@/components/PixelScript";
+import { CountUp } from "@/components/CountUp";
 
 export const Route = createFileRoute("/")({
   component: Index,
