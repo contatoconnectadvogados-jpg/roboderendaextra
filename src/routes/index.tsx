@@ -215,24 +215,25 @@ function HowItWorks() {
     { icon: Zap, n: "03", t: "Vendas no Piloto Automático", d: "O anúncio entra no ar gerenciado por IA + expertise nos bastidores. Você só acompanha os clientes chegando." },
   ];
   return (
-    <section id="como-funciona" className="relative py-24">
+    <section id="como-funciona" className="relative py-16 sm:py-24">
       <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold md:text-4xl">
+          <h2 className="fluid-h2 font-extrabold">
             Como fazer dinheiro na internet virou questão de <span className="text-gradient">3 cliques</span>
           </h2>
           <p className="mt-3 text-muted-foreground">A complexidade fica no nosso lado. A simplicidade fica no seu.</p>
         </motion.div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-3">
+        <div className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 md:grid-cols-3">
           {steps.map((s, i) => (
             <motion.div
               key={s.n}
               {...fadeUp}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              whileHover={{ y: -8 }}
-              className="glass group relative rounded-2xl p-7 transition-shadow hover:shadow-[var(--shadow-glow-purple)]"
+              whileHover={{ y: -8, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="glass group relative rounded-2xl p-5 transition-shadow hover:shadow-[var(--shadow-glow-purple)] sm:p-7"
             >
               <span className="absolute right-6 top-6 text-6xl font-extrabold text-white/5">{s.n}</span>
               <div
@@ -241,11 +242,14 @@ function HowItWorks() {
               >
                 <s.icon className="h-6 w-6" />
               </div>
-              <h3 className="mt-5 text-xl font-bold text-foreground">{s.t}</h3>
+              <h3 className="mt-5 text-lg font-bold text-foreground sm:text-xl">
+                {s.t === "A IA Trabalha" ? (<>A <span translate="no">IA</span> Trabalha</>) : s.t}
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{s.d}</p>
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );
