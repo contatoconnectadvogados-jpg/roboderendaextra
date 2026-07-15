@@ -297,32 +297,46 @@ function ForWhom() {
     { icon: MessageCircle, t: "Vendas pelo WhatsApp", d: "Quer o telefone tocando com gente interessada? O robô envia o público certo direto pro chat." },
   ];
   return (
-    <section id="para-quem" className="mx-auto max-w-7xl px-6 py-24">
+    <section id="para-quem" className="mx-auto max-w-7xl overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-        <h2 className="text-3xl font-extrabold md:text-4xl">
+        <h2 className="fluid-h2 font-extrabold">
           Para quem é esta <span className="text-gradient">ferramenta?</span>
         </h2>
         <p className="mt-3 text-muted-foreground">Se você vende algo, o robô trabalha para você.</p>
       </motion.div>
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        {cards.map((c, i) => (
-          <motion.div
-            key={c.t}
-            {...fadeUp}
-            transition={{ duration: 0.5, delay: i * 0.08 }}
-            whileHover={{ y: -8, rotate: -0.5 }}
-            className="glass group rounded-2xl p-6 transition-all hover:shadow-[var(--shadow-glow-cyan)]"
-          >
-            <div
-              className="flex h-12 w-12 items-center justify-center rounded-xl text-cta-foreground transition-transform group-hover:scale-110"
-              style={{ background: "var(--gradient-cta)" }}
+      <div className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
+        {cards.map((c, i) => {
+          const fromLeft = i % 2 === 0;
+          return (
+            <motion.div
+              key={c.t}
+              initial={{ opacity: 0, x: fromLeft ? -80 : 80 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.6, delay: i * 0.08, type: "spring", stiffness: 90, damping: 16 }}
+              whileHover={{ y: -8, rotate: -0.5 }}
+              whileTap={{ scale: 0.98 }}
+              className="glass group rounded-2xl p-5 transition-all hover:shadow-[var(--shadow-glow-cyan)] sm:p-6"
             >
-              <c.icon className="h-6 w-6" />
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-foreground">{c.t}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
-          </motion.div>
-        ))}
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-xl text-cta-foreground transition-transform group-hover:scale-110"
+                style={{ background: "var(--gradient-cta)" }}
+              >
+                <c.icon className="h-6 w-6" />
+              </div>
+              <h3 className="mt-4 text-base font-bold text-foreground sm:text-lg">
+                {c.t.includes("WhatsApp") ? (
+                  <>Vendas pelo <span translate="no">WhatsApp</span></>
+                ) : c.t.includes("E-commerce") ? (
+                  <span translate="no">E-commerce / Dropshipping</span>
+                ) : (
+                  c.t
+                )}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{c.d}</p>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );
@@ -333,31 +347,39 @@ function Benefits() {
     { icon: Clock, t: "Configuração em 5 minutos", d: "Sem cursos, sem semanas de estudo." },
     { icon: Shield, t: "Você controla seu orçamento", d: "Comece com pouco, escale com confiança." },
     { icon: Users, t: "Suporte humano premium", d: "Gente de verdade respondendo seu chat." },
-    { icon: TrendingUp, t: "Otimização contínua por IA", d: "Os anúncios melhoram sozinhos a cada hora." },
+    { icon: TrendingUp, t: "Otimização contínua por IA", d: "Os anúncios melhoram sozinhos a cada hora.", translateNoTitle: true },
   ];
   return (
-    <section className="relative py-24">
+    <section className="relative py-16 sm:py-24">
       <div className="absolute inset-0 bg-grid opacity-20" />
-      <div className="relative mx-auto max-w-7xl px-6">
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
         <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-extrabold md:text-4xl">
+          <h2 className="fluid-h2 font-extrabold">
             Tudo o que você precisa. <span className="text-gradient">Nada do que não precisa.</span>
           </h2>
         </motion.div>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
           {items.map((it, i) => (
             <motion.div
               key={it.t}
               {...fadeUp}
               transition={{ duration: 0.5, delay: i * 0.08 }}
-              whileHover={{ y: -6 }}
-              className="glass rounded-2xl p-6"
+              whileHover={{ y: -6, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="glow-yellow relative rounded-2xl border-2 bg-white/[0.03] p-5 backdrop-blur-md sm:p-6"
             >
               <it.icon className="h-7 w-7 text-gold" />
-              <h3 className="mt-4 font-bold text-foreground">{it.t}</h3>
+              <h3 className="mt-4 font-bold text-foreground">
+                {it.translateNoTitle ? (
+                  <>Otimização contínua por <span translate="no">IA</span></>
+                ) : (
+                  it.t
+                )}
+              </h3>
               <p className="mt-1.5 text-sm text-muted-foreground">{it.d}</p>
             </motion.div>
           ))}
+
         </div>
       </div>
     </section>
