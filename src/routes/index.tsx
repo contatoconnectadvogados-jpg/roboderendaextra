@@ -517,7 +517,7 @@ function Pricing() {
     "Cancelamento fácil a qualquer momento",
   ];
   return (
-    <section id="preco" className="relative py-24">
+    <section id="preco" className="relative py-16 sm:py-24">
       <div
         className="absolute inset-0"
         style={{
@@ -525,9 +525,9 @@ function Pricing() {
             "radial-gradient(circle at 50% 0%, oklch(0.35 0.2 300 / 0.4), transparent 60%)",
         }}
       />
-      <div className="relative mx-auto max-w-3xl px-6">
+      <div className="relative mx-auto max-w-3xl px-4 sm:px-6">
         <motion.div {...fadeUp} className="text-center">
-          <h2 className="text-3xl font-extrabold md:text-4xl">
+          <h2 className="fluid-h2 font-extrabold">
             Dê o primeiro passo para a sua{" "}
             <span className="text-gradient">estabilidade financeira</span> hoje.
           </h2>
@@ -539,61 +539,61 @@ function Pricing() {
 
         <motion.div
           {...fadeUp}
-          className="glass relative mt-12 overflow-hidden rounded-3xl p-8 shadow-[var(--shadow-elegant)] md:p-10"
+          className="glass relative mt-10 overflow-hidden rounded-3xl p-5 text-center shadow-[var(--shadow-elegant)] sm:mt-12 sm:p-8 md:p-10"
         >
           <div className="pointer-events-none absolute inset-0 rounded-3xl ring-1 ring-[oklch(0.65_0.27_300/0.5)]" />
           <div
-            className="absolute right-0 top-0 rounded-bl-2xl px-4 py-1.5 text-xs font-extrabold uppercase tracking-wider text-cta-foreground"
+            className="absolute right-0 top-0 rounded-bl-2xl px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-cta-foreground sm:px-4 sm:text-xs"
             style={{ background: "var(--gradient-cta)" }}
           >
             ★ Plano Principal
           </div>
 
-          <h3 className="text-2xl font-extrabold text-foreground">Robô de Vendas Completo</h3>
+          <h3 className="mt-6 text-xl font-extrabold text-foreground sm:mt-0 sm:text-2xl" translate="no">Robô de Vendas Completo</h3>
           <p className="mt-1 text-sm text-muted-foreground">Acesso vitalício à plataforma e atualizações.</p>
 
-          {/* Price anchoring */}
-          <div className="relative my-7 overflow-hidden rounded-2xl border border-[oklch(0.65_0.27_300/0.4)] bg-gradient-to-br from-[oklch(0.22_0.06_280/0.7)] to-[oklch(0.18_0.04_270/0.7)] p-6 md:p-8">
+          {/* Price anchoring — fully centralized */}
+          <div className="relative my-6 overflow-hidden rounded-2xl border border-[oklch(0.65_0.27_300/0.4)] bg-gradient-to-br from-[oklch(0.22_0.06_280/0.7)] to-[oklch(0.18_0.04_270/0.7)] p-5 sm:my-7 sm:p-8">
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[oklch(0.74_0.22_50/0.25)] blur-3xl" />
             <div className="pointer-events-none absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-[oklch(0.65_0.27_300/0.25)] blur-3xl" />
 
-            <div className="relative">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-md bg-destructive/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-destructive">
+            <div className="relative flex flex-col items-center text-center">
+              <div className="flex flex-wrap items-center justify-center gap-2">
+                <span className="rounded-md bg-destructive/20 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-destructive sm:text-[11px]">
                   -80% HOJE
                 </span>
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-gold/15 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-wider text-gold">
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-gold/15 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-gold sm:text-[11px]">
                   <Clock className="h-3 w-3" /> Oferta por tempo limitado
                 </span>
               </div>
 
-              <div className="mt-5 flex flex-wrap items-end gap-x-4 gap-y-3">
-                <div>
-                  <p className="text-xs uppercase tracking-wider text-muted-foreground">De</p>
-                  <p className="text-2xl font-bold text-muted-foreground line-through decoration-destructive/70 decoration-2">
-                    R$ 997,00
-                  </p>
-                </div>
-                <ArrowRight className="mb-2 h-6 w-6 text-cta" />
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-gold">
-                    Por apenas
-                  </p>
-                  <p className="text-5xl font-extrabold leading-none text-gradient md:text-6xl">
-                    R$ 197,80
-                  </p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    ou 12x de R$ 19,67 no cartão
-                  </p>
-                </div>
+              <div className="mt-5 flex items-baseline justify-center gap-2">
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">De</span>
+                <span className="text-xl font-bold text-muted-foreground line-through decoration-destructive/70 decoration-2 sm:text-2xl" translate="no">
+                  R$ 997,00
+                </span>
               </div>
 
-              <div className="mt-6 flex items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3.5">
+              <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-gold">
+                Por apenas
+              </p>
+              <p
+                className="mt-1 font-extrabold leading-none text-gradient"
+                style={{ fontSize: "clamp(2.5rem, 10vw, 4rem)" }}
+                translate="no"
+              >
+                R$ 197,80
+              </p>
+              <p className="mt-2 text-xs text-muted-foreground" translate="no">
+                ou 12x de R$ 19,67 no cartão
+              </p>
+
+              <div className="mt-5 flex w-full max-w-sm items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3 text-left">
                 <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
                 <div className="text-sm text-foreground">
                   <p>
                     + Mensalidade de{" "}
-                    <strong className="text-success">R$ 49,90/mês</strong> a partir do 2º mês
+                    <strong className="text-success" translate="no">R$ 49,90/mês</strong> a partir do 2º mês
                   </p>
                   <p className="mt-0.5 text-xs text-muted-foreground">
                     Cancele quando quiser, sem multa nem fidelidade.
@@ -601,14 +601,14 @@ function Pricing() {
                 </div>
               </div>
 
-              <p className="mt-4 text-center text-xs font-semibold text-foreground/70">
+              <p className="mt-4 text-xs font-semibold text-foreground/70">
                 💰 Você economiza{" "}
-                <span className="text-gradient">R$ 799,20</span> hoje
+                <span className="text-gradient" translate="no">R$ 799,20</span> hoje
               </p>
             </div>
           </div>
 
-          <ul className="space-y-3.5">
+          <ul className="mx-auto max-w-md space-y-3 text-left">
             {features.map((f) => (
               <li key={f} className="flex items-start gap-3">
                 <div className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-success/15 ring-1 ring-success/40">
@@ -623,15 +623,15 @@ function Pricing() {
 
           <div className="mt-6 rounded-2xl border border-white/10 bg-white/[0.03] p-5 text-left">
             <p className="text-sm leading-relaxed text-foreground/90">
-              Uma agência de tráfego cobraria de você <strong className="text-foreground">R$ 1.500 a R$ 5.000 por mês</strong> para gerenciar seus anúncios (e muitas vezes sem garantia de resultado). Ferramentas americanas complexas custam centenas de dólares.
+              Uma agência de tráfego cobraria de você <strong className="text-foreground" translate="no">R$ 1.500 a R$ 5.000 por mês</strong> para gerenciar seus anúncios (e muitas vezes sem garantia de resultado). Ferramentas americanas complexas custam centenas de dólares.
             </p>
             <p className="mt-3 text-sm font-semibold text-cta">Eu faço diferente.</p>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              Por apenas <strong className="text-foreground">R$ 197,80</strong>, você tem o poder de uma agência inteira resumida em uma tela de 3 cliques. Sem letras miúdas, sem contratos de fidelidade. Eu baixei o preço ao limite porque sei como é estar no início, querendo apenas uma renda previsível para respirar em paz.
+              Por apenas <strong className="text-foreground" translate="no">R$ 197,80</strong>, você tem o poder de uma agência inteira resumida em uma tela de 3 cliques. Sem letras miúdas, sem contratos de fidelidade. Eu baixei o preço ao limite porque sei como é estar no início, querendo apenas uma renda previsível para respirar em paz.
             </p>
           </div>
 
-          <div className="mt-6">
+          <div className="mx-auto mt-6 w-full max-w-md">
             <CheckoutButton variant="success" size="lg" label="pricing" pulse>
               Quero Acessar o Robô e Começar Hoje
             </CheckoutButton>
@@ -640,6 +640,7 @@ function Pricing() {
           <TrustBadges variant="pricing" />
         </motion.div>
       </div>
+
     </section>
   );
 }
