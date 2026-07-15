@@ -396,14 +396,14 @@ function FAQ() {
   ];
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section id="faq" className="mx-auto max-w-3xl px-6 py-24">
+    <section id="faq" className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="text-center">
-        <h2 className="text-3xl font-extrabold md:text-4xl">
+        <h2 className="fluid-h2 font-extrabold">
           Perguntas <span className="text-gradient">Frequentes</span>
         </h2>
         <p className="mt-3 text-muted-foreground">Tirando as dúvidas mais comuns antes de você começar.</p>
       </motion.div>
-      <div className="mt-10 space-y-3">
+      <div className="mt-8 space-y-3 sm:mt-10">
         {faqs.map((f, i) => (
           <motion.div
             key={i}
@@ -413,11 +413,12 @@ function FAQ() {
           >
             <button
               onClick={() => setOpen(open === i ? null : i)}
-              className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors hover:bg-white/5"
+              className="flex w-full items-center justify-between gap-3 px-4 py-4 text-left transition-colors hover:bg-white/5 sm:px-6 sm:py-5"
             >
-              <span className="font-semibold text-foreground">{f.q}</span>
+              <span className="text-sm font-semibold text-foreground sm:text-base">{f.q}</span>
               <ChevronDown className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform ${open === i ? "rotate-180" : ""}`} />
             </button>
+
             <motion.div
               initial={false}
               animate={{ height: open === i ? "auto" : 0, opacity: open === i ? 1 : 0 }}
