@@ -15,22 +15,27 @@ function getDeadline(): number {
 }
 
 export function CountdownTimer() {
-  const [deadline, setDeadline] = useState<number>(() => getDeadline());
-  const [now, setNow] = useState<number>(() => Date.now());
+  const [mounted, setMounted] = useState(false);
+  const [deadline, setDeadline] = useState<number>(0);
+  const [now, setNow] = useState<number>(0);
 
   useEffect(() => {
+    const d = getDeadline();
+    setDeadline(d);
+    setNow(Date.now());
+    setMounted(true);
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
 
   useEffect(() => {
-    if (now >= deadline) {
+    if (mounted && deadline > 0 && now >= deadline) {
       localStorage.removeItem("rv_countdown_deadline");
       setDeadline(getDeadline());
     }
-  }, [now, deadline]);
+  }, [now, deadline, mounted]);
 
-  const diff = Math.max(0, deadline - now);
+  const diff = mounted ? Math.max(0, deadline - now) : 3 * 3600_000;
   const h = Math.floor(diff / 3600_000);
   const m = Math.floor((diff % 3600_000) / 60_000);
   const s = Math.floor((diff % 60_000) / 1000);
