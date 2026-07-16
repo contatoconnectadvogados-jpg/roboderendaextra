@@ -178,3 +178,14 @@
   h1, h2, h3, h4, p { overflow-wrap: break-word; word-wrap: break-word; hyphens: none; }
 }
 
+/* Hide Lovable edit badge on published site */
+[id*="lovable-badge"],
+a[href*="lovable.dev"],
+div[class*="lovable-badge"],
+iframe[src*="lovable.dev"],
+#lovable-badge-root {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
