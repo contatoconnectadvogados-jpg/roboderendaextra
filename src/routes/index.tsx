@@ -81,7 +81,7 @@ function Hero() {
           </p>
 
           <div className="mt-8 w-full max-w-md">
-            <CheckoutButton variant="cta" size="lg" label="hero" pulse>
+            <CheckoutButton variant="cta" size="lg" label="hero" scrollTo="#comparativo" pulse>
               Quero Simplificar Minhas Vendas Agora
             </CheckoutButton>
             <TrustBadges />
@@ -146,7 +146,7 @@ function ComparisonSection() {
     { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 5k–10k mensais" },
   ];
   return (
-    <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
+    <section id="comparativo" className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
         <h2 className="fluid-h2 font-extrabold">
           A Diferença Entre o Mercado e o <span className="text-gradient">Nosso Robô</span>
