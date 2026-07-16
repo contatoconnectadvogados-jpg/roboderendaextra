@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Check } from "lucide-react";
+import { ArrowRight, CheckCircle2, Check, Play, Pause } from "lucide-react";
 import videoAsset from "@/assets/vsl-robovendas.mp4.asset.json";
 import {
   EMPTY,
@@ -55,10 +55,15 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY);
   const [step, setStep] = useState(0); // number of questions revealed (0..3)
   const [transition, setTransition] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const quizAnchorRef = useRef<HTMLDivElement | null>(null);
   const maxWatchedRef = useRef(0);
   const progressReportedRef = useRef(0);
+  const finishedRef = useRef(false);
+  const endedRef = useRef(false);
 
   // Decide whether to show gate — after mount only, to avoid SSR mismatch
   useEffect(() => {
@@ -104,7 +109,9 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   };
 
   const finish = (reason: "button" | "video_end") => {
-    if (transition) return;
+    // Single-fire guard using ref (state updates aren't synchronous)
+    if (finishedRef.current) return;
+    finishedRef.current = true;
     setTransition(true);
     track({
       type: "gate_complete",
@@ -115,14 +122,19 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
     const finalAnswers = { ...answers, completedAt: Date.now() };
     writeAnswers(finalAnswers);
     completeGate();
+    // Sequence: fade message (2.6s) → smooth scroll → then reveal site.
     setTimeout(() => {
       setVisible(false);
       setStage("reached_offer");
       track({ type: "reached_offer" });
       onFinish();
-      // Scroll to top of the revealed site
+      // Give the browser one frame to paint the newly-visible site, then smooth scroll.
       requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "auto" });
+        try {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch {
+          window.scrollTo(0, 0);
+        }
       });
     }, 2600);
   };
@@ -134,6 +146,7 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
     if (v.currentTime > maxWatchedRef.current) {
       maxWatchedRef.current = v.currentTime;
     }
+    if (v.duration) setProgressPct((v.currentTime / v.duration) * 100);
     if (step === 0 && v.currentTime >= REVEAL_AT_SEC) {
       setStep(1);
       setTimeout(() => {
@@ -153,25 +166,65 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const onSeeking = () => {
     const v = videoRef.current;
     if (!v) return;
-    // Prevent forward seek beyond watched
-    if (v.currentTime > maxWatchedRef.current + 0.5) {
+    // Disabled once the video naturally ended, so it doesn't fight the ended event.
+    if (endedRef.current) return;
+    if (v.currentTime > maxWatchedRef.current + 1.5) {
       v.currentTime = maxWatchedRef.current;
     }
   };
 
   const onEnded = () => {
+    endedRef.current = true;
+    setVideoEnded(true);
+    setIsPlaying(false);
     const v = videoRef.current;
     track({
       type: "video_end",
       meta: { watched: v?.currentTime || 0, duration: v?.duration || 0 },
     });
-    finish("video_end");
+    // Small delay so the ended event finishes bubbling before we tear down.
+    setTimeout(() => finish("video_end"), 120);
   };
 
   const onPlay = () => {
+    setIsPlaying(true);
     setStage("video_playing");
     track({ type: "video_start" });
   };
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v || endedRef.current) return;
+    if (v.paused) v.play().catch(() => {});
+    else v.pause();
+  };
+
+  // Block keyboard shortcuts (arrows, page up/down, home/end, media keys)
+  useEffect(() => {
+    if (!visible) return;
+    const blocked = new Set([
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowUp",
+      "ArrowDown",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "End",
+      "MediaTrackNext",
+      "MediaTrackPrevious",
+      "MediaFastForward",
+      "MediaRewind",
+    ]);
+    const onKey = (e: KeyboardEvent) => {
+      if (blocked.has(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [visible]);
 
   if (!checked || !visible) return null;
 
