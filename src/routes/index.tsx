@@ -300,12 +300,25 @@ function Manifesto() {
 }
 
 function ForWhom() {
-  const cards = [
-    { icon: Store, t: "Negócios Físicos", d: "Lojas, clínicas e restaurantes que precisam atrair clientes da sua região todos os dias." },
-    { icon: Package, t: "E-commerce / Dropshipping", d: "Venda produtos escaláveis sem precisar entender de bloqueios, BM ou contas comerciais." },
-    { icon: Smartphone, t: "Produtos Digitais", d: "Otimize o tráfego para suas páginas de vendas de infoprodutos de forma contínua." },
-    { icon: MessageCircle, t: "Vendas pelo WhatsApp", d: "Quer o telefone tocando com gente interessada? O robô envia o público certo direto pro chat." },
+  const baseCards = [
+    { key: "fisico", icon: Store, t: "Negócios Físicos", d: "Lojas, clínicas e restaurantes que precisam atrair clientes da sua região todos os dias." },
+    { key: "ecom", icon: Package, t: "E-commerce / Dropshipping", d: "Venda produtos escaláveis sem precisar entender de bloqueios, BM ou contas comerciais." },
+    { key: "digital", icon: Smartphone, t: "Produtos Digitais", d: "Otimize o tráfego para suas páginas de vendas de infoprodutos de forma contínua." },
+    { key: "whats", icon: MessageCircle, t: "Vendas pelo WhatsApp", d: "Quer o telefone tocando com gente interessada? O robô envia o público certo direto pro chat." },
   ];
+  const answers = useQuizAnswers();
+  const cards = useMemo(() => {
+    const b = answers.business || "";
+    let firstKey: string | null = null;
+    if (b.includes("físico")) firstKey = "fisico";
+    else if (b.includes("digital")) firstKey = "digital";
+    else if (b.includes("E-commerce")) firstKey = "ecom";
+    else if (b.includes("WhatsApp")) firstKey = "whats";
+    if (!firstKey) return baseCards;
+    const first = baseCards.find((c) => c.key === firstKey);
+    if (!first) return baseCards;
+    return [first, ...baseCards.filter((c) => c.key !== firstKey)];
+  }, [answers.business]);
   return (
     <section id="para-quem" className="mx-auto max-w-7xl overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
