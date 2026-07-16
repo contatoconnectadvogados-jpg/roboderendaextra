@@ -458,44 +458,71 @@ function FAQ() {
 }
 
 function Testimonials() {
-  const items = [
+  const items: (Testimonial & { key: string })[] = [
     {
+      key: "carla",
       name: "Carla Menezes",
       role: "Dona de salão de beleza • Recife/PE",
       result: "Agenda lotada em 2 semanas",
-      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 14k por mês.",
+      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 8k por mês.",
+      avatarUrl: "https://i.pravatar.cc/160?img=45",
     },
     {
+      key: "rafael",
       name: "Rafael Andrade",
       role: "E-commerce de suplementos",
       result: "ROI de 4.8x no primeiro mês",
       text: "Já tinha gastado mais de R$ 8 mil com agência sem resultado. O robô virou a chave: vendas todo dia, no automático.",
+      avatarUrl: "https://i.pravatar.cc/160?img=12",
     },
     {
+      key: "juliana",
       name: "Juliana Prado",
       role: "Produtora digital • SP",
       result: "+312% em conversão",
       text: "O painel é absurdamente simples. Sem pixel, sem BM bloqueada, sem dor de cabeça. Só os clientes chegando.",
+      avatarUrl: "https://i.pravatar.cc/160?img=47",
     },
     {
+      key: "marcos",
       name: "Marcos Vinícius",
       role: "Restaurante delivery",
       result: "De 12 para 78 pedidos/dia",
       text: "Sou do interior, não manjo de tecnologia. Em uma semana o robô lotou minhas noites de quinta a domingo.",
+      avatarUrl: "https://i.pravatar.cc/160?img=15",
     },
     {
+      key: "patricia",
       name: "Patrícia Lima",
       role: "Loja de roupas online",
-      result: "R$ 11.400 em 30 dias",
+      result: "R$ 7.200 em 30 dias",
       text: "Larguei a CLT depois de 4 meses usando. Hoje trabalho de casa cuidando do meu filho. Estabilidade de verdade.",
+      avatarUrl: "https://i.pravatar.cc/160?img=32",
     },
     {
+      key: "diego",
       name: "Diego Tavares",
       role: "Coach financeiro",
       result: "Leads qualificados todo dia",
       text: "Cancelei 3 ferramentas que eu pagava e ainda assim minha receita dobrou. Suporte responde em minutos.",
+      avatarUrl: "https://i.pravatar.cc/160?img=68",
     },
   ];
+
+  const answers = useQuizAnswers();
+  const ordered = useMemo(() => {
+    const b = answers.business || "";
+    let firstKey: string | null = null;
+    if (b.includes("físico")) firstKey = "carla";
+    else if (b.includes("digital")) firstKey = "juliana";
+    else if (b.includes("E-commerce")) firstKey = "rafael";
+    else if (b.includes("WhatsApp")) firstKey = "carla";
+    if (!firstKey) return items;
+    const first = items.find((c) => c.key === firstKey);
+    if (!first) return items;
+    return [first, ...items.filter((c) => c.key !== firstKey)];
+  }, [answers.business]);
+
   return (
     <section className="relative py-16 sm:py-24">
       <div
@@ -514,7 +541,7 @@ function Testimonials() {
               ))}
             </div>
             <span className="text-2xl font-extrabold text-gradient" translate="no">4.9</span>
-            <span className="text-sm text-muted-foreground">/ 5 • +12.000 alunos</span>
+            <span className="text-sm text-muted-foreground">/ 5 • +3.200 usuários</span>
           </div>
           <h2 className="fluid-h2 mt-4 font-extrabold">
             Pessoas reais. Resultados <span className="text-gradient">reais</span>.
@@ -525,7 +552,7 @@ function Testimonials() {
         </motion.div>
 
 
-        <TestimonialsCarousel items={items} />
+        <TestimonialsCarousel items={ordered} />
       </div>
     </section>
   );
