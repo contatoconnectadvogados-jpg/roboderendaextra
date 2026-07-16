@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag } from "lucide-react";
+import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks } from "lucide-react";
 import { getConfig, saveConfig, useSiteConfig, DEFAULT_CONFIG } from "@/lib/site-config";
-import { clearAnalytics, computeMetrics, useAnalytics } from "@/lib/analytics";
+import { clearAnalytics, computeFunnel, computeMetrics, computeVisitors, useAnalytics } from "@/lib/analytics";
 
 export const Route = createFileRoute("/admindev")({
   component: AdminDev,
