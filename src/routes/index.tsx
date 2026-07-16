@@ -635,18 +635,21 @@ function Pricing() {
               >
                 R$ 197,80
               </p>
-              <p className="mt-2 text-xs text-muted-foreground" translate="no">
+              <p className="mt-2 text-sm text-muted-foreground" translate="no">
                 ou 12x de R$ 19,67 no cartão
               </p>
 
               <div className="mt-5 flex w-full max-w-sm items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3 text-left">
                 <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-                <div className="text-sm text-foreground">
-                  <p>
+                <div className="text-foreground">
+                  <p className="text-sm">
                     + Mensalidade de{" "}
                     <strong className="text-success" translate="no">R$ 49,90/mês</strong> a partir do 2º mês
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    (cobre manutenção do painel e otimização contínua da IA)
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Cancele quando quiser, sem multa nem fidelidade.
                   </p>
                 </div>
