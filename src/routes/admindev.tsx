@@ -187,6 +187,17 @@ const STAGE_LABELS: Record<string, string> = {
   checkout_click: "Clicou no checkout",
 };
 
+function fmtDur(ms: number): string {
+  if (!ms || ms < 1000) return "—";
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}h${m.toString().padStart(2, "0")}m`;
+  if (m > 0) return `${m}m${sec.toString().padStart(2, "0")}s`;
+  return `${sec}s`;
+}
+
 function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics> }) {
   const visitors = useMemo(() => computeVisitors(events), [events]);
   const funnel = useMemo(() => computeFunnel(visitors), [visitors]);
