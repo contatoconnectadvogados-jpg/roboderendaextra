@@ -6,15 +6,17 @@ import {
   ChevronDown, Bot, Heart, Users, Lock, Headphones, RefreshCw,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
-import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { TestimonialsCarousel, type Testimonial } from "@/components/TestimonialsCarousel";
 import { PixelAndTracking } from "@/components/PixelScript";
 import { CountUp } from "@/components/CountUp";
+import { VideoQuizGate } from "@/components/VideoQuizGate";
+import { useQuizAnswers } from "@/lib/quiz-state";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -34,8 +36,10 @@ const fadeUp = {
 };
 
 function Index() {
+  const [, force] = useState(0);
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <VideoQuizGate onFinish={() => force((n) => n + 1)} />
       <PixelAndTracking />
       <SiteHeader />
       <TopNotificationBar />
@@ -53,6 +57,7 @@ function Index() {
     </div>
   );
 }
+
 
 function Hero() {
   return (
