@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { readIdentity, type Identity } from "@/lib/contacts";
 
 export type AnalyticsEventType =
   | "pageview"
@@ -20,6 +21,7 @@ export type AnalyticsEvent = {
   path?: string;
   label?: string;
   sessionId?: string;
+  identity?: Identity | null;
   meta?: Record<string, unknown>;
 };
 
@@ -60,7 +62,8 @@ export function getSessionId(): string {
 export function track(ev: Omit<AnalyticsEvent, "ts" | "sessionId">) {
   if (typeof window === "undefined") return;
   const list = read();
-  list.push({ ...ev, ts: Date.now(), sessionId: getSessionId() });
+  const identity = ev.identity ?? readIdentity();
+  list.push({ ...ev, ts: Date.now(), sessionId: getSessionId(), identity });
   write(list);
 
   const w = window as any;
@@ -111,6 +114,9 @@ export function computeMetrics(list: AnalyticsEvent[]) {
 
 export type VisitorRow = {
   sessionId: string;
+  name: string | null;
+  phone: string | null;
+  code: string | null;
   firstSeen: number;
   lastSeen: number;
   stage: string;
@@ -151,6 +157,9 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
     if (!row) {
       row = {
         sessionId: sid,
+        name: null,
+        phone: null,
+        code: null,
         firstSeen: ev.ts,
         lastSeen: ev.ts,
         stage: "landed",
@@ -165,6 +174,11 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
         timeOnOfferMs: 0,
       };
       map.set(sid, row);
+    }
+    if (ev.identity && !row.name) {
+      row.name = ev.identity.name;
+      row.phone = ev.identity.phone;
+      row.code = ev.identity.code;
     }
     if (ev.ts < row.firstSeen) row.firstSeen = ev.ts;
     row.lastSeen = Math.max(row.lastSeen, ev.ts);
