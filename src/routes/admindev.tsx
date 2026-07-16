@@ -239,6 +239,10 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
               <thead>
                 <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
                   <th className="py-2 pr-3">Sessão</th>
+                  <th className="py-2 pr-3">Entrada</th>
+                  <th className="py-2 pr-3">Última atividade</th>
+                  <th className="py-2 pr-3">Tempo total</th>
+                  <th className="py-2 pr-3">Vídeo · Quiz · Oferta</th>
                   <th className="py-2 pr-3">Etapa</th>
                   <th className="py-2 pr-3">Vídeo</th>
                   <th className="py-2 pr-3">P1 · Negócio</th>
@@ -253,9 +257,16 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
                   <tr key={v.sessionId} className="border-t border-white/5 align-top">
                     <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">
                       {v.sessionId.slice(0, 10)}…
-                      <div className="text-[10px] text-muted-foreground/70">
-                        {new Date(v.lastSeen).toLocaleString("pt-BR")}
-                      </div>
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {new Date(v.firstSeen).toLocaleString("pt-BR")}
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {new Date(v.lastSeen).toLocaleString("pt-BR")}
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">{fmtDur(v.totalMs)}</td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {fmtDur(v.timeOnVideoMs)} · {fmtDur(v.timeOnQuizMs)} · {fmtDur(v.timeOnOfferMs)}
                     </td>
                     <td className="py-2 pr-3">
                       <span className="inline-flex items-center rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase text-foreground/80">
