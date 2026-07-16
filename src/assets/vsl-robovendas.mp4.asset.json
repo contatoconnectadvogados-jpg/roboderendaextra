@@ -1,11 +1,11 @@
 {
-  "version": 1,
   "asset_id": "29110e3b-b3c5-4841-bca9-3469a2983bd4",
-  "project_id": "9daeaa4e-b713-438b-82d7-20fcca8ef000",
-  "url": "/__l5e/assets-v1/29110e3b-b3c5-4841-bca9-3469a2983bd4/vsl-robovendas.mp4",
-  "r2_key": "a/v1/9daeaa4e-b713-438b-82d7-20fcca8ef000/29110e3b-b3c5-4841-bca9-3469a2983bd4/vsl-robovendas.mp4",
-  "original_filename": "vsl-robovendas.mp4",
-  "size": 13402547,
   "content_type": "video/mp4",
-  "created_at": "2026-07-16T10:00:29Z"
+  "created_at": "2026-07-16T10:00:29Z",
+  "original_filename": "vsl-robovendas.mp4",
+  "project_id": "49dea27b-327a-4748-81f9-53433cbf71bc",
+  "r2_key": "a/v1/49dea27b-327a-4748-81f9-53433cbf71bc/29110e3b-b3c5-4841-bca9-3469a2983bd4/vsl-robovendas.mp4",
+  "size": 13402547,
+  "url": "/__l5e/assets-v1/29110e3b-b3c5-4841-bca9-3469a2983bd4/vsl-robovendas.mp4",
+  "version": 1
 }
