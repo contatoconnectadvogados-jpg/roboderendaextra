@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, CheckCircle2, Check } from "lucide-react";
+import { ArrowRight, CheckCircle2, Check, Play, Pause } from "lucide-react";
 import videoAsset from "@/assets/vsl-robovendas.mp4.asset.json";
 import {
   EMPTY,
@@ -55,10 +55,15 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const [answers, setAnswers] = useState<QuizAnswers>(EMPTY);
   const [step, setStep] = useState(0); // number of questions revealed (0..3)
   const [transition, setTransition] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [progressPct, setProgressPct] = useState(0);
+  const [videoEnded, setVideoEnded] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const quizAnchorRef = useRef<HTMLDivElement | null>(null);
   const maxWatchedRef = useRef(0);
   const progressReportedRef = useRef(0);
+  const finishedRef = useRef(false);
+  const endedRef = useRef(false);
 
   // Decide whether to show gate — after mount only, to avoid SSR mismatch
   useEffect(() => {
@@ -104,7 +109,9 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   };
 
   const finish = (reason: "button" | "video_end") => {
-    if (transition) return;
+    // Single-fire guard using ref (state updates aren't synchronous)
+    if (finishedRef.current) return;
+    finishedRef.current = true;
     setTransition(true);
     track({
       type: "gate_complete",
@@ -115,14 +122,19 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
     const finalAnswers = { ...answers, completedAt: Date.now() };
     writeAnswers(finalAnswers);
     completeGate();
+    // Sequence: fade message (2.6s) → smooth scroll → then reveal site.
     setTimeout(() => {
       setVisible(false);
       setStage("reached_offer");
       track({ type: "reached_offer" });
       onFinish();
-      // Scroll to top of the revealed site
+      // Give the browser one frame to paint the newly-visible site, then smooth scroll.
       requestAnimationFrame(() => {
-        window.scrollTo({ top: 0, behavior: "auto" });
+        try {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } catch {
+          window.scrollTo(0, 0);
+        }
       });
     }, 2600);
   };
@@ -134,6 +146,7 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
     if (v.currentTime > maxWatchedRef.current) {
       maxWatchedRef.current = v.currentTime;
     }
+    if (v.duration) setProgressPct((v.currentTime / v.duration) * 100);
     if (step === 0 && v.currentTime >= REVEAL_AT_SEC) {
       setStep(1);
       setTimeout(() => {
@@ -153,25 +166,65 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const onSeeking = () => {
     const v = videoRef.current;
     if (!v) return;
-    // Prevent forward seek beyond watched
-    if (v.currentTime > maxWatchedRef.current + 0.5) {
+    // Disabled once the video naturally ended, so it doesn't fight the ended event.
+    if (endedRef.current) return;
+    if (v.currentTime > maxWatchedRef.current + 1.5) {
       v.currentTime = maxWatchedRef.current;
     }
   };
 
   const onEnded = () => {
+    endedRef.current = true;
+    setVideoEnded(true);
+    setIsPlaying(false);
     const v = videoRef.current;
     track({
       type: "video_end",
       meta: { watched: v?.currentTime || 0, duration: v?.duration || 0 },
     });
-    finish("video_end");
+    // Small delay so the ended event finishes bubbling before we tear down.
+    setTimeout(() => finish("video_end"), 120);
   };
 
   const onPlay = () => {
+    setIsPlaying(true);
     setStage("video_playing");
     track({ type: "video_start" });
   };
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v || endedRef.current) return;
+    if (v.paused) v.play().catch(() => {});
+    else v.pause();
+  };
+
+  // Block keyboard shortcuts (arrows, page up/down, home/end, media keys)
+  useEffect(() => {
+    if (!visible) return;
+    const blocked = new Set([
+      "ArrowLeft",
+      "ArrowRight",
+      "ArrowUp",
+      "ArrowDown",
+      "PageUp",
+      "PageDown",
+      "Home",
+      "End",
+      "MediaTrackNext",
+      "MediaTrackPrevious",
+      "MediaFastForward",
+      "MediaRewind",
+    ]);
+    const onKey = (e: KeyboardEvent) => {
+      if (blocked.has(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, [visible]);
 
   if (!checked || !visible) return null;
 
@@ -209,25 +262,70 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
               </p>
 
               <div className="glass mt-6 overflow-hidden rounded-2xl p-1.5 shadow-[var(--shadow-elegant)] sm:mt-8">
-                <video
-                  ref={videoRef}
-                  src={videoAsset.url}
-                  controls
-                  controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
-                  disablePictureInPicture
-                  disableRemotePlayback
-                  playsInline
-                  preload="auto"
-                  onTimeUpdate={onTimeUpdate}
-                  onSeeking={onSeeking}
-                  onEnded={onEnded}
-                  onPlay={onPlay}
-                  onRateChange={() => {
-                    const v = videoRef.current;
-                    if (v && v.playbackRate !== 1) v.playbackRate = 1;
+                <div
+                  className="relative overflow-hidden rounded-xl bg-black"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
                   }}
-                  className="block h-auto w-full rounded-xl bg-black"
-                />
+                >
+                  <video
+                    ref={videoRef}
+                    src={videoAsset.url}
+                    playsInline
+                    preload="auto"
+                    disablePictureInPicture
+                    disableRemotePlayback
+                    controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
+                    onTimeUpdate={onTimeUpdate}
+                    onSeeking={onSeeking}
+                    onEnded={onEnded}
+                    onPlay={onPlay}
+                    onPause={() => setIsPlaying(false)}
+                    onClick={togglePlay}
+                    onRateChange={() => {
+                      const v = videoRef.current;
+                      if (v && v.playbackRate !== 1) v.playbackRate = 1;
+                    }}
+                    className="block h-auto w-full select-none bg-black"
+                    style={{ pointerEvents: "auto" }}
+                  />
+                  {/* Invisible overlay to block right-click / long-press UI on the video area */}
+                  <div
+                    className="pointer-events-none absolute inset-0"
+                    aria-hidden="true"
+                  />
+                  {/* Custom play/pause button (only user control) */}
+                  {!videoEnded && (
+                    <button
+                      type="button"
+                      onClick={togglePlay}
+                      aria-label={isPlaying ? "Pausar vídeo" : "Reproduzir vídeo"}
+                      className={`absolute inset-0 flex items-center justify-center transition-opacity ${
+                        isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"
+                      } bg-black/25`}
+                    >
+                      <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/95 text-black shadow-2xl sm:h-20 sm:w-20">
+                        {isPlaying ? (
+                          <Pause className="h-8 w-8" fill="currentColor" />
+                        ) : (
+                          <Play className="ml-1 h-8 w-8" fill="currentColor" />
+                        )}
+                      </span>
+                    </button>
+                  )}
+                  {/* Non-interactive progress bar — purely decorative */}
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1.5 bg-white/10">
+                    <div
+                      className="h-full transition-all duration-200"
+                      style={{
+                        width: `${progressPct}%`,
+                        background: "var(--gradient-cta)",
+                      }}
+                    />
+                  </div>
+                </div>
               </div>
 
               <div ref={quizAnchorRef} className="mt-8 space-y-5 sm:mt-10">

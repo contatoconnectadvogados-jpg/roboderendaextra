@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks } from "lucide-react";
+import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks, MessageCircle, Copy, Check as CheckIcon, Search } from "lucide-react";
 import { getConfig, saveConfig, useSiteConfig, DEFAULT_CONFIG } from "@/lib/site-config";
 import { clearAnalytics, computeFunnel, computeMetrics, computeVisitors, useAnalytics } from "@/lib/analytics";
+import { buildTrackableLink, upsertContact, useContacts, type Contact } from "@/lib/contacts";
 
 export const Route = createFileRoute("/admindev")({
   component: AdminDev,
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/admindev")({
   }),
 });
 
-type Tab = "dashboard" | "settings";
+type Tab = "dashboard" | "links" | "settings";
 
 function AdminDev() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -42,13 +43,18 @@ function AdminDev() {
           <TabButton active={tab === "dashboard"} onClick={() => setTab("dashboard")} icon={BarChart3}>
             Dashboard
           </TabButton>
+          <TabButton active={tab === "links"} onClick={() => setTab("links")} icon={MessageCircle}>
+            Gerador de Link
+          </TabButton>
           <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={SettingsIcon}>
             Configurações
           </TabButton>
         </div>
 
         <div className="mt-8">
-          {tab === "dashboard" ? <Dashboard /> : <SettingsPanel />}
+          {tab === "dashboard" && <Dashboard />}
+          {tab === "links" && <LinksPanel />}
+          {tab === "settings" && <SettingsPanel />}
         </div>
       </div>
     </div>
@@ -202,6 +208,14 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
   const visitors = useMemo(() => computeVisitors(events), [events]);
   const funnel = useMemo(() => computeFunnel(visitors), [visitors]);
   const total = visitors.length || 1;
+  const [q, setQ] = useState("");
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return visitors;
+    return visitors.filter((v) =>
+      [v.name, v.phone, v.sessionId].some((f) => (f || "").toLowerCase().includes(s)),
+    );
+  }, [visitors, q]);
 
   return (
     <>
@@ -239,16 +253,29 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
           <PlayCircle className="h-5 w-5 text-cta" />
           <p className="text-sm font-bold text-foreground">Visitantes — vídeo, quiz e jornada</p>
         </div>
-        <p className="mb-4 text-xs text-muted-foreground">
+        <p className="mb-3 text-xs text-muted-foreground">
           Cada linha é uma sessão. Dados parciais aparecem mesmo quando o visitante não termina.
         </p>
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative flex-1 max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar por nome, telefone ou sessão…"
+              className="w-full rounded-lg border border-white/15 bg-background/60 py-2 pl-9 pr-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-cta"
+            />
+          </div>
+        </div>
         {visitors.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum visitante rastreado ainda.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] text-xs">
+            <table className="w-full min-w-[980px] text-xs">
               <thead>
                 <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2 pr-3">Nome</th>
+                  <th className="py-2 pr-3">Telefone</th>
                   <th className="py-2 pr-3">Sessão</th>
                   <th className="py-2 pr-3">Entrada</th>
                   <th className="py-2 pr-3">Última atividade</th>
@@ -264,8 +291,14 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
                 </tr>
               </thead>
               <tbody>
-                {visitors.slice(0, 40).map((v) => (
+                {filtered.slice(0, 60).map((v) => (
                   <tr key={v.sessionId} className="border-t border-white/5 align-top">
+                    <td className="py-2 pr-3 font-semibold text-foreground">
+                      {v.name || <span className="text-muted-foreground">—</span>}
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {v.phone || <span className="text-muted-foreground">—</span>}
+                    </td>
                     <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">
                       {v.sessionId.slice(0, 10)}…
                     </td>
@@ -361,6 +394,200 @@ function SettingsPanel() {
   const [pixelId, setPixelId] = useState(current.pixelId);
   const [checkoutUrl, setCheckoutUrl] = useState(current.checkoutUrl);
   const [saved, setSaved] = useState(false);
+
+  return SettingsPanelInner({ current, pixelId, setPixelId, checkoutUrl, setCheckoutUrl, saved, setSaved });
+}
+
+function LinksPanel() {
+  const contacts = useContacts();
+  const events = useAnalytics();
+  const visitors = useMemo(() => computeVisitors(events), [events]);
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [generated, setGenerated] = useState<Contact | null>(null);
+  const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [q, setQ] = useState("");
+
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+  const statusByCode = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const v of visitors) {
+      if (!v.code) continue;
+      const prev = map.get(v.code);
+      if (!prev || rank(v.stage) > rank(prev)) map.set(v.code, v.stage);
+    }
+    return map;
+  }, [visitors]);
+
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return contacts;
+    return contacts.filter((c) =>
+      [c.name, c.phone, c.code].some((f) => (f || "").toLowerCase().includes(s)),
+    );
+  }, [contacts, q]);
+
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim() || !phone.trim()) return;
+    const c = upsertContact(name, phone);
+    setGenerated(c);
+    setName("");
+    setPhone("");
+  };
+
+  const copy = async (link: string, code: string) => {
+    try {
+      await navigator.clipboard.writeText(link);
+      setCopiedCode(code);
+      setTimeout(() => setCopiedCode((c) => (c === code ? null : c)), 2000);
+    } catch {}
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+        <div className="flex items-center gap-2">
+          <MessageCircle className="h-5 w-5 text-cta" />
+          <h3 className="text-base font-bold text-foreground">Gerador de Link Individual</h3>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">
+          Crie um link único por pessoa para enviar via WhatsApp. Cada acesso será rastreado com nome e telefone.
+        </p>
+        <form onSubmit={submit} className="mt-5 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Primeiro nome"
+            required
+            className="rounded-lg border border-white/15 bg-background/60 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-cta"
+          />
+          <input
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder="Telefone/WhatsApp (ex: 11999998888)"
+            required
+            className="rounded-lg border border-white/15 bg-background/60 px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-cta"
+          />
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-bold leading-tight text-cta-foreground shadow-[var(--shadow-cta)] transition-transform hover:scale-[1.02]"
+            style={{ background: "var(--gradient-cta)" }}
+          >
+            <LinkIcon className="h-4 w-4" /> Gerar link
+          </button>
+        </form>
+
+        {generated && (
+          <div className="mt-5 rounded-xl border border-success/40 bg-success/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wider text-success">
+              Link gerado para {generated.name}
+            </p>
+            <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:items-center">
+              <code className="flex-1 truncate rounded-lg bg-background/60 px-3 py-2 text-xs text-foreground ring-1 ring-white/10">
+                {buildTrackableLink(origin, generated)}
+              </code>
+              <button
+                onClick={() => copy(buildTrackableLink(origin, generated), generated.code)}
+                className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-xs font-bold text-foreground transition-colors hover:bg-white/20"
+              >
+                {copiedCode === generated.code ? (
+                  <><CheckIcon className="h-3.5 w-3.5" /> Copiado</>
+                ) : (
+                  <><Copy className="h-3.5 w-3.5" /> Copiar link</>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div className="flex items-center gap-2">
+          <ListChecks className="h-5 w-5 text-gold" />
+          <p className="text-sm font-bold text-foreground">Links já gerados</p>
+        </div>
+        <p className="mb-3 text-xs text-muted-foreground">
+          Status atualiza automaticamente conforme a pessoa avança no site.
+        </p>
+        <div className="mb-3 relative max-w-md">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Buscar por nome ou telefone…"
+            className="w-full rounded-lg border border-white/15 bg-background/60 py-2 pl-9 pr-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-cta"
+          />
+        </div>
+        {contacts.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nenhum link gerado ainda.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[720px] text-xs">
+              <thead>
+                <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2 pr-3">Nome</th>
+                  <th className="py-2 pr-3">Telefone</th>
+                  <th className="py-2 pr-3">Link</th>
+                  <th className="py-2 pr-3">Criado</th>
+                  <th className="py-2 pr-3">Status</th>
+                  <th className="py-2">Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filtered.map((c) => {
+                  const link = buildTrackableLink(origin, c);
+                  const status = statusByCode.get(c.code) ?? "not_accessed";
+                  return (
+                    <tr key={c.code} className="border-t border-white/5 align-top">
+                      <td className="py-2 pr-3 font-semibold text-foreground">{c.name}</td>
+                      <td className="py-2 pr-3 text-foreground/80">{c.phone}</td>
+                      <td className="py-2 pr-3">
+                        <code className="block max-w-[280px] truncate rounded bg-background/60 px-2 py-1 text-[11px] text-foreground/80 ring-1 ring-white/10">
+                          {link}
+                        </code>
+                      </td>
+                      <td className="py-2 pr-3 text-muted-foreground">
+                        {new Date(c.createdAt).toLocaleString("pt-BR")}
+                      </td>
+                      <td className="py-2 pr-3">
+                        <span className="inline-flex items-center rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase text-foreground/80">
+                          {status === "not_accessed" ? "não acessado" : (STAGE_LABELS[status] ?? status)}
+                        </span>
+                      </td>
+                      <td className="py-2">
+                        <button
+                          onClick={() => copy(link, c.code)}
+                          className="inline-flex items-center gap-1.5 rounded-md border border-white/15 bg-white/10 px-2 py-1 text-[11px] font-bold text-foreground transition-colors hover:bg-white/20"
+                        >
+                          {copiedCode === c.code ? (
+                            <><CheckIcon className="h-3 w-3" /> Copiado</>
+                          ) : (
+                            <><Copy className="h-3 w-3" /> Copiar</>
+                          )}
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const STAGE_RANK = ["landed","video_playing","answered_q1","answered_q2","answered_q3","clicked_continue","reached_offer","checkout_click"];
+function rank(s: string) { return STAGE_RANK.indexOf(s); }
+
+function SettingsPanelInner({
+  current, pixelId, setPixelId, checkoutUrl, setCheckoutUrl, saved, setSaved,
+}: any) {
 
   const save = () => {
     saveConfig({

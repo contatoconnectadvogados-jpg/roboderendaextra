@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useSiteConfig } from "@/lib/site-config";
 import { track } from "@/lib/analytics";
+import { captureIdentityFromURL } from "@/lib/contacts";
 
 export function PixelAndTracking() {
   const { pixelId } = useSiteConfig();
@@ -38,6 +39,8 @@ export function PixelAndTracking() {
 
   // Track pageview + session start + heartbeat (session activity)
   useEffect(() => {
+    // Capture identity from ?ref= BEFORE the first track call so events carry it.
+    captureIdentityFromURL();
     track({ type: "session_start", path: window.location.pathname });
     track({ type: "pageview", path: window.location.pathname });
 
