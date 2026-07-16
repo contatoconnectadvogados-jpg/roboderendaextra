@@ -110,8 +110,8 @@ function Hero() {
 
 function StatsBlock() {
   const stats = [
-    { end: 12480, prefix: "+", suffix: "", decimals: 0, l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
-    { end: 38, prefix: "R$ ", suffix: "M", decimals: 0, l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
+    { end: 3200, prefix: "+", suffix: "", decimals: 0, l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
+    { end: 2.4, prefix: "R$ ", suffix: "M", decimals: 1, l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
     { end: 4.9, prefix: "", suffix: "★", decimals: 1, l: "Avaliação média", c: "from-[oklch(0.74_0.22_50)] to-[oklch(0.82_0.16_88)]" },
   ];
   return (
@@ -143,7 +143,7 @@ function ComparisonSection() {
     { old: "Painéis confusos com centenas de botões", neu: "Interface limpa: preencha, clique e pronto" },
     { old: "Risco alto de perder dinheiro testando", neu: "Estrutura validada — você foca no seu negócio" },
     { old: "Meses estudando público, pixel e métricas", neu: "O sistema traduz tudo em segundos" },
-    { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 10k–15k mensais" },
+    { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 5k–10k mensais" },
   ];
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -283,9 +283,9 @@ function Manifesto() {
             que querem sair do sufoco, deixar a <span translate="no">CLT</span> para trás e ter liberdade de trabalhar de onde quiserem.
           </p>
           <p>
-            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa <span translate="no">IA</span>, alcançar
-            <strong className="text-gradient" translate="no"> R$ 10.000 a R$ 15.000 por mês</strong> não é conto de fadas — é matemática pura.
-            É sobre ter uma renda extra que vira renda principal. É sobre ter paz.
+            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa <span translate="no">IA</span>, construir uma renda extra real de
+            <strong className="text-gradient" translate="no"> R$ 5.000 a R$ 10.000 por mês</strong> não é conto de fadas — é matemática pura.
+            É sobre ter uma renda que complementa ou substitui o salário fixo. É sobre ter paz.
           </p>
         </div>
 
