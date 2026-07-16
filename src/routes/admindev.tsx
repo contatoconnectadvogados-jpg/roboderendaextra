@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks } from "lucide-react";
+import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks, MessageCircle, Copy, Check as CheckIcon, Search } from "lucide-react";
 import { getConfig, saveConfig, useSiteConfig, DEFAULT_CONFIG } from "@/lib/site-config";
 import { clearAnalytics, computeFunnel, computeMetrics, computeVisitors, useAnalytics } from "@/lib/analytics";
+import { buildTrackableLink, upsertContact, useContacts, type Contact } from "@/lib/contacts";
 
 export const Route = createFileRoute("/admindev")({
   component: AdminDev,
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/admindev")({
   }),
 });
 
-type Tab = "dashboard" | "settings";
+type Tab = "dashboard" | "links" | "settings";
 
 function AdminDev() {
   const [tab, setTab] = useState<Tab>("dashboard");
@@ -42,13 +43,18 @@ function AdminDev() {
           <TabButton active={tab === "dashboard"} onClick={() => setTab("dashboard")} icon={BarChart3}>
             Dashboard
           </TabButton>
+          <TabButton active={tab === "links"} onClick={() => setTab("links")} icon={MessageCircle}>
+            Gerador de Link
+          </TabButton>
           <TabButton active={tab === "settings"} onClick={() => setTab("settings")} icon={SettingsIcon}>
             Configurações
           </TabButton>
         </div>
 
         <div className="mt-8">
-          {tab === "dashboard" ? <Dashboard /> : <SettingsPanel />}
+          {tab === "dashboard" && <Dashboard />}
+          {tab === "links" && <LinksPanel />}
+          {tab === "settings" && <SettingsPanel />}
         </div>
       </div>
     </div>
