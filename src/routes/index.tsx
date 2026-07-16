@@ -6,15 +6,17 @@ import {
   ChevronDown, Bot, Heart, Users, Lock, Headphones, RefreshCw,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
 import { CheckoutButton } from "@/components/CheckoutButton";
 import { CountdownTimer } from "@/components/CountdownTimer";
-import { TestimonialsCarousel } from "@/components/TestimonialsCarousel";
+import { TestimonialsCarousel, type Testimonial } from "@/components/TestimonialsCarousel";
 import { PixelAndTracking } from "@/components/PixelScript";
 import { CountUp } from "@/components/CountUp";
+import { VideoQuizGate } from "@/components/VideoQuizGate";
+import { useQuizAnswers } from "@/lib/quiz-state";
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -34,8 +36,10 @@ const fadeUp = {
 };
 
 function Index() {
+  const [, force] = useState(0);
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <VideoQuizGate onFinish={() => force((n) => n + 1)} />
       <PixelAndTracking />
       <SiteHeader />
       <TopNotificationBar />
@@ -53,6 +57,7 @@ function Index() {
     </div>
   );
 }
+
 
 function Hero() {
   return (
@@ -105,8 +110,8 @@ function Hero() {
 
 function StatsBlock() {
   const stats = [
-    { end: 12480, prefix: "+", suffix: "", decimals: 0, l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
-    { end: 38, prefix: "R$ ", suffix: "M", decimals: 0, l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
+    { end: 3200, prefix: "+", suffix: "", decimals: 0, l: "Usuários ativos", c: "from-[oklch(0.65_0.27_300)] to-[oklch(0.7_0.22_240)]" },
+    { end: 2.4, prefix: "R$ ", suffix: "M", decimals: 1, l: "Em vendas geradas", c: "from-[oklch(0.78_0.2_155)] to-[oklch(0.82_0.16_200)]" },
     { end: 4.9, prefix: "", suffix: "★", decimals: 1, l: "Avaliação média", c: "from-[oklch(0.74_0.22_50)] to-[oklch(0.82_0.16_88)]" },
   ];
   return (
@@ -138,7 +143,7 @@ function ComparisonSection() {
     { old: "Painéis confusos com centenas de botões", neu: "Interface limpa: preencha, clique e pronto" },
     { old: "Risco alto de perder dinheiro testando", neu: "Estrutura validada — você foca no seu negócio" },
     { old: "Meses estudando público, pixel e métricas", neu: "O sistema traduz tudo em segundos" },
-    { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 10k–15k mensais" },
+    { old: "Falsa promessa de milhões na primeira semana", neu: "Crescimento real: foco em R$ 5k–10k mensais" },
   ];
   return (
     <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24">
@@ -278,9 +283,9 @@ function Manifesto() {
             que querem sair do sufoco, deixar a <span translate="no">CLT</span> para trás e ter liberdade de trabalhar de onde quiserem.
           </p>
           <p>
-            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa <span translate="no">IA</span>, alcançar
-            <strong className="text-gradient" translate="no"> R$ 10.000 a R$ 15.000 por mês</strong> não é conto de fadas — é matemática pura.
-            É sobre ter uma renda extra que vira renda principal. É sobre ter paz.
+            Acreditamos em construir estabilidade. Com tempo e dedicação usando nossa <span translate="no">IA</span>, construir uma renda extra real de
+            <strong className="text-gradient" translate="no"> R$ 5.000 a R$ 10.000 por mês</strong> não é conto de fadas — é matemática pura.
+            É sobre ter uma renda que complementa ou substitui o salário fixo. É sobre ter paz.
           </p>
         </div>
 
@@ -295,12 +300,25 @@ function Manifesto() {
 }
 
 function ForWhom() {
-  const cards = [
-    { icon: Store, t: "Negócios Físicos", d: "Lojas, clínicas e restaurantes que precisam atrair clientes da sua região todos os dias." },
-    { icon: Package, t: "E-commerce / Dropshipping", d: "Venda produtos escaláveis sem precisar entender de bloqueios, BM ou contas comerciais." },
-    { icon: Smartphone, t: "Produtos Digitais", d: "Otimize o tráfego para suas páginas de vendas de infoprodutos de forma contínua." },
-    { icon: MessageCircle, t: "Vendas pelo WhatsApp", d: "Quer o telefone tocando com gente interessada? O robô envia o público certo direto pro chat." },
+  const baseCards = [
+    { key: "fisico", icon: Store, t: "Negócios Físicos", d: "Lojas, clínicas e restaurantes que precisam atrair clientes da sua região todos os dias." },
+    { key: "ecom", icon: Package, t: "E-commerce / Dropshipping", d: "Venda produtos escaláveis sem precisar entender de bloqueios, BM ou contas comerciais." },
+    { key: "digital", icon: Smartphone, t: "Produtos Digitais", d: "Otimize o tráfego para suas páginas de vendas de infoprodutos de forma contínua." },
+    { key: "whats", icon: MessageCircle, t: "Vendas pelo WhatsApp", d: "Quer o telefone tocando com gente interessada? O robô envia o público certo direto pro chat." },
   ];
+  const answers = useQuizAnswers();
+  const cards = useMemo(() => {
+    const b = answers.business || "";
+    let firstKey: string | null = null;
+    if (b.includes("físico")) firstKey = "fisico";
+    else if (b.includes("digital")) firstKey = "digital";
+    else if (b.includes("E-commerce")) firstKey = "ecom";
+    else if (b.includes("WhatsApp")) firstKey = "whats";
+    if (!firstKey) return baseCards;
+    const first = baseCards.find((c) => c.key === firstKey);
+    if (!first) return baseCards;
+    return [first, ...baseCards.filter((c) => c.key !== firstKey)];
+  }, [answers.business]);
   return (
     <section id="para-quem" className="mx-auto max-w-7xl overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
       <motion.div {...fadeUp} className="mx-auto max-w-2xl text-center">
@@ -440,44 +458,71 @@ function FAQ() {
 }
 
 function Testimonials() {
-  const items = [
+  const items: (Testimonial & { key: string })[] = [
     {
+      key: "carla",
       name: "Carla Menezes",
       role: "Dona de salão de beleza • Recife/PE",
       result: "Agenda lotada em 2 semanas",
-      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 14k por mês.",
+      text: "Eu não entendia nada de anúncio. Em 5 minutos meu robô estava no ar e meu WhatsApp não parou de tocar. Hoje fatura R$ 8k por mês.",
+      avatarUrl: "https://i.pravatar.cc/160?img=45",
     },
     {
+      key: "rafael",
       name: "Rafael Andrade",
       role: "E-commerce de suplementos",
       result: "ROI de 4.8x no primeiro mês",
       text: "Já tinha gastado mais de R$ 8 mil com agência sem resultado. O robô virou a chave: vendas todo dia, no automático.",
+      avatarUrl: "https://i.pravatar.cc/160?img=12",
     },
     {
+      key: "juliana",
       name: "Juliana Prado",
       role: "Produtora digital • SP",
       result: "+312% em conversão",
       text: "O painel é absurdamente simples. Sem pixel, sem BM bloqueada, sem dor de cabeça. Só os clientes chegando.",
+      avatarUrl: "https://i.pravatar.cc/160?img=47",
     },
     {
+      key: "marcos",
       name: "Marcos Vinícius",
       role: "Restaurante delivery",
       result: "De 12 para 78 pedidos/dia",
       text: "Sou do interior, não manjo de tecnologia. Em uma semana o robô lotou minhas noites de quinta a domingo.",
+      avatarUrl: "https://i.pravatar.cc/160?img=15",
     },
     {
+      key: "patricia",
       name: "Patrícia Lima",
       role: "Loja de roupas online",
-      result: "R$ 11.400 em 30 dias",
+      result: "R$ 7.200 em 30 dias",
       text: "Larguei a CLT depois de 4 meses usando. Hoje trabalho de casa cuidando do meu filho. Estabilidade de verdade.",
+      avatarUrl: "https://i.pravatar.cc/160?img=32",
     },
     {
+      key: "diego",
       name: "Diego Tavares",
       role: "Coach financeiro",
       result: "Leads qualificados todo dia",
       text: "Cancelei 3 ferramentas que eu pagava e ainda assim minha receita dobrou. Suporte responde em minutos.",
+      avatarUrl: "https://i.pravatar.cc/160?img=68",
     },
   ];
+
+  const answers = useQuizAnswers();
+  const ordered = useMemo(() => {
+    const b = answers.business || "";
+    let firstKey: string | null = null;
+    if (b.includes("físico")) firstKey = "carla";
+    else if (b.includes("digital")) firstKey = "juliana";
+    else if (b.includes("E-commerce")) firstKey = "rafael";
+    else if (b.includes("WhatsApp")) firstKey = "carla";
+    if (!firstKey) return items;
+    const first = items.find((c) => c.key === firstKey);
+    if (!first) return items;
+    return [first, ...items.filter((c) => c.key !== firstKey)];
+  }, [answers.business]);
+
   return (
     <section className="relative py-16 sm:py-24">
       <div
@@ -496,7 +541,7 @@ function Testimonials() {
               ))}
             </div>
             <span className="text-2xl font-extrabold text-gradient" translate="no">4.9</span>
-            <span className="text-sm text-muted-foreground">/ 5 • +12.000 alunos</span>
+            <span className="text-sm text-muted-foreground">/ 5 • +3.200 usuários</span>
           </div>
           <h2 className="fluid-h2 mt-4 font-extrabold">
             Pessoas reais. Resultados <span className="text-gradient">reais</span>.
@@ -507,7 +552,7 @@ function Testimonials() {
         </motion.div>
 
 
-        <TestimonialsCarousel items={items} />
+        <TestimonialsCarousel items={ordered} />
       </div>
     </section>
   );
@@ -590,18 +635,21 @@ function Pricing() {
               >
                 R$ 197,80
               </p>
-              <p className="mt-2 text-xs text-muted-foreground" translate="no">
+              <p className="mt-2 text-sm text-muted-foreground" translate="no">
                 ou 12x de R$ 19,67 no cartão
               </p>
 
               <div className="mt-5 flex w-full max-w-sm items-start gap-3 rounded-xl border border-success/40 bg-success/10 px-4 py-3 text-left">
                 <Sparkles className="mt-0.5 h-5 w-5 flex-shrink-0 text-success" />
-                <div className="text-sm text-foreground">
-                  <p>
+                <div className="text-foreground">
+                  <p className="text-sm">
                     + Mensalidade de{" "}
                     <strong className="text-success" translate="no">R$ 49,90/mês</strong> a partir do 2º mês
                   </p>
-                  <p className="mt-0.5 text-xs text-muted-foreground">
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    (cobre manutenção do painel e otimização contínua da IA)
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">
                     Cancele quando quiser, sem multa nem fidelidade.
                   </p>
                 </div>
