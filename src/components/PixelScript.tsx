@@ -36,9 +36,22 @@ export function PixelAndTracking() {
     /* eslint-enable */
   }, [pixelId]);
 
-  // Track pageview once
+  // Track pageview + session start + heartbeat (session activity)
   useEffect(() => {
+    track({ type: "session_start", path: window.location.pathname });
     track({ type: "pageview", path: window.location.pathname });
+
+    const hb = window.setInterval(() => {
+      if (!document.hidden) track({ type: "heartbeat" });
+    }, 15_000);
+    const onHide = () => track({ type: "heartbeat", label: "unload" });
+    window.addEventListener("pagehide", onHide);
+    window.addEventListener("beforeunload", onHide);
+    return () => {
+      window.clearInterval(hb);
+      window.removeEventListener("pagehide", onHide);
+      window.removeEventListener("beforeunload", onHide);
+    };
   }, []);
 
   return null;
