@@ -170,7 +170,128 @@ function Dashboard() {
           </div>
         )}
       </div>
+
+      <VisitorsAndFunnel events={events} />
     </div>
+  );
+}
+
+const STAGE_LABELS: Record<string, string> = {
+  landed: "Chegou na página",
+  video_playing: "Assistindo vídeo",
+  answered_q1: "Respondeu P1",
+  answered_q2: "Respondeu P2",
+  answered_q3: "Respondeu P3",
+  clicked_continue: "Clicou em Continuar",
+  reached_offer: "Chegou na oferta",
+  checkout_click: "Clicou no checkout",
+};
+
+function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics> }) {
+  const visitors = useMemo(() => computeVisitors(events), [events]);
+  const funnel = useMemo(() => computeFunnel(visitors), [visitors]);
+  const total = visitors.length || 1;
+
+  return (
+    <>
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div className="flex items-center gap-2">
+          <ListChecks className="h-5 w-5 text-gold" />
+          <p className="text-sm font-bold text-foreground">Funil de conversão (vídeo + quiz + oferta)</p>
+        </div>
+        <p className="mb-4 text-xs text-muted-foreground">Quantos visitantes atingiram cada etapa.</p>
+        <div className="space-y-2">
+          {funnel.map((f) => {
+            const pct = Math.round((f.count / total) * 100);
+            return (
+              <div key={f.stage} className="rounded-lg bg-background/40 p-3 ring-1 ring-white/5">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold text-foreground">{STAGE_LABELS[f.stage] ?? f.stage}</span>
+                  <span className="text-muted-foreground">
+                    <span className="font-bold text-foreground">{f.count}</span> · {pct}%
+                  </span>
+                </div>
+                <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-white/5">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${pct}%`, background: "var(--gradient-cta)" }}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
+        <div className="flex items-center gap-2">
+          <PlayCircle className="h-5 w-5 text-cta" />
+          <p className="text-sm font-bold text-foreground">Visitantes — vídeo, quiz e jornada</p>
+        </div>
+        <p className="mb-4 text-xs text-muted-foreground">
+          Cada linha é uma sessão. Dados parciais aparecem mesmo quando o visitante não termina.
+        </p>
+        {visitors.length === 0 ? (
+          <p className="text-sm text-muted-foreground">Nenhum visitante rastreado ainda.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[820px] text-xs">
+              <thead>
+                <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2 pr-3">Sessão</th>
+                  <th className="py-2 pr-3">Etapa</th>
+                  <th className="py-2 pr-3">Vídeo</th>
+                  <th className="py-2 pr-3">P1 · Negócio</th>
+                  <th className="py-2 pr-3">P2 · Anúncios</th>
+                  <th className="py-2 pr-3">P3 · Meta</th>
+                  <th className="py-2 pr-3">Oferta</th>
+                  <th className="py-2">Checkout</th>
+                </tr>
+              </thead>
+              <tbody>
+                {visitors.slice(0, 40).map((v) => (
+                  <tr key={v.sessionId} className="border-t border-white/5 align-top">
+                    <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">
+                      {v.sessionId.slice(0, 10)}…
+                      <div className="text-[10px] text-muted-foreground/70">
+                        {new Date(v.lastSeen).toLocaleString("pt-BR")}
+                      </div>
+                    </td>
+                    <td className="py-2 pr-3">
+                      <span className="inline-flex items-center rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-bold uppercase text-foreground/80">
+                        {STAGE_LABELS[v.stage] ?? v.stage}
+                      </span>
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {v.videoWatchedSec > 0
+                        ? `${v.videoWatchedSec}s${v.videoDurationSec ? ` de ${v.videoDurationSec}s` : ""}`
+                        : "—"}
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">{v.answers[0] ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground/80">{v.answers[1] ?? "—"}</td>
+                    <td className="py-2 pr-3 text-foreground/80">{v.answers[2] ?? "—"}</td>
+                    <td className="py-2 pr-3">
+                      {v.reachedOffer ? (
+                        <span className="text-success">✓ {new Date(v.reachedOffer).toLocaleTimeString("pt-BR")}</span>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                    <td className="py-2">
+                      {v.checkoutClick ? (
+                        <span className="text-success">✓ {new Date(v.checkoutClick).toLocaleTimeString("pt-BR")}</span>
+                      ) : (
+                        <span className="text-muted-foreground">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </>
   );
 }
 
