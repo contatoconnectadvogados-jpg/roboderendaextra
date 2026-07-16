@@ -208,6 +208,14 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
   const visitors = useMemo(() => computeVisitors(events), [events]);
   const funnel = useMemo(() => computeFunnel(visitors), [visitors]);
   const total = visitors.length || 1;
+  const [q, setQ] = useState("");
+  const filtered = useMemo(() => {
+    const s = q.trim().toLowerCase();
+    if (!s) return visitors;
+    return visitors.filter((v) =>
+      [v.name, v.phone, v.sessionId].some((f) => (f || "").toLowerCase().includes(s)),
+    );
+  }, [visitors, q]);
 
   return (
     <>
@@ -245,16 +253,29 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
           <PlayCircle className="h-5 w-5 text-cta" />
           <p className="text-sm font-bold text-foreground">Visitantes — vídeo, quiz e jornada</p>
         </div>
-        <p className="mb-4 text-xs text-muted-foreground">
+        <p className="mb-3 text-xs text-muted-foreground">
           Cada linha é uma sessão. Dados parciais aparecem mesmo quando o visitante não termina.
         </p>
+        <div className="mb-4 flex items-center gap-2">
+          <div className="relative flex-1 max-w-md">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Buscar por nome, telefone ou sessão…"
+              className="w-full rounded-lg border border-white/15 bg-background/60 py-2 pl-9 pr-3 text-xs text-foreground outline-none placeholder:text-muted-foreground/60 focus:border-cta"
+            />
+          </div>
+        </div>
         {visitors.length === 0 ? (
           <p className="text-sm text-muted-foreground">Nenhum visitante rastreado ainda.</p>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[820px] text-xs">
+            <table className="w-full min-w-[980px] text-xs">
               <thead>
                 <tr className="text-left text-[10px] uppercase tracking-wider text-muted-foreground">
+                  <th className="py-2 pr-3">Nome</th>
+                  <th className="py-2 pr-3">Telefone</th>
                   <th className="py-2 pr-3">Sessão</th>
                   <th className="py-2 pr-3">Entrada</th>
                   <th className="py-2 pr-3">Última atividade</th>
@@ -270,8 +291,14 @@ function VisitorsAndFunnel({ events }: { events: ReturnType<typeof useAnalytics>
                 </tr>
               </thead>
               <tbody>
-                {visitors.slice(0, 40).map((v) => (
+                {filtered.slice(0, 60).map((v) => (
                   <tr key={v.sessionId} className="border-t border-white/5 align-top">
+                    <td className="py-2 pr-3 font-semibold text-foreground">
+                      {v.name || <span className="text-muted-foreground">—</span>}
+                    </td>
+                    <td className="py-2 pr-3 text-foreground/80">
+                      {v.phone || <span className="text-muted-foreground">—</span>}
+                    </td>
                     <td className="py-2 pr-3 font-mono text-[11px] text-muted-foreground">
                       {v.sessionId.slice(0, 10)}…
                     </td>
