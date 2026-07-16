@@ -10,7 +10,9 @@ export type AnalyticsEventType =
   | "quiz_answer"
   | "stage"
   | "gate_complete"
-  | "reached_offer";
+  | "reached_offer"
+  | "session_start"
+  | "heartbeat";
 
 export type AnalyticsEvent = {
   type: AnalyticsEventType;
@@ -117,6 +119,10 @@ export type VisitorRow = {
   answers: (string | null)[];
   reachedOffer: number | null;
   checkoutClick: number | null;
+  totalMs: number;
+  timeOnVideoMs: number;
+  timeOnQuizMs: number;
+  timeOnOfferMs: number;
 };
 
 const STAGE_ORDER = [
@@ -136,6 +142,9 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
     const i = STAGE_ORDER.indexOf(s);
     return i < 0 ? -1 : i;
   };
+  // Sort events chronologically for reliable segment timing
+  const sorted = [...list].sort((a, b) => a.ts - b.ts);
+  const lastEvByStage = new Map<string, AnalyticsEvent | null>();
   for (const ev of list) {
     const sid = ev.sessionId || "unknown";
     let row = map.get(sid);
@@ -150,9 +159,14 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
         answers: [null, null, null],
         reachedOffer: null,
         checkoutClick: null,
+        totalMs: 0,
+        timeOnVideoMs: 0,
+        timeOnQuizMs: 0,
+        timeOnOfferMs: 0,
       };
       map.set(sid, row);
     }
+    if (ev.ts < row.firstSeen) row.firstSeen = ev.ts;
     row.lastSeen = Math.max(row.lastSeen, ev.ts);
     if (ev.type === "video_progress" || ev.type === "video_end") {
       const m = (ev.meta || {}) as any;
@@ -177,6 +191,40 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
       row.stage = "checkout_click";
     }
   }
+
+  // Compute per-section time by walking events per session in order.
+  const bySession = new Map<string, AnalyticsEvent[]>();
+  for (const ev of sorted) {
+    const sid = ev.sessionId || "unknown";
+    if (!bySession.has(sid)) bySession.set(sid, []);
+    bySession.get(sid)!.push(ev);
+  }
+  for (const [sid, evs] of bySession.entries()) {
+    const row = map.get(sid);
+    if (!row) continue;
+    let phase: "gate" | "video" | "quiz" | "offer" = "gate";
+    let lastTs = evs[0]?.ts ?? row.firstSeen;
+    const bump = (until: number) => {
+      const dt = Math.max(0, until - lastTs);
+      if (dt > 10 * 60_000) return; // ignore >10min idle gaps
+      if (phase === "video") row.timeOnVideoMs += dt;
+      else if (phase === "quiz") row.timeOnQuizMs += dt;
+      else if (phase === "offer") row.timeOnOfferMs += dt;
+      lastTs = until;
+    };
+    for (const ev of evs) {
+      bump(ev.ts);
+      if (ev.type === "video_start" || (ev.type === "stage" && ev.label === "video_playing")) {
+        phase = "video";
+      } else if (ev.type === "quiz_answer" || (ev.type === "stage" && ev.label?.startsWith("answered_"))) {
+        phase = "quiz";
+      } else if (ev.type === "reached_offer" || ev.type === "checkout_click") {
+        phase = "offer";
+      }
+    }
+    row.totalMs = Math.max(0, row.lastSeen - row.firstSeen);
+  }
+
   return Array.from(map.values()).sort((a, b) => b.lastSeen - a.lastSeen);
 }
 

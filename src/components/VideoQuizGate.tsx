@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, Check } from "lucide-react";
 import videoAsset from "@/assets/vsl-robovendas.mp4.asset.json";
 import {
   EMPTY,
@@ -47,7 +47,7 @@ const QUESTIONS: QDef[] = [
   },
 ];
 
-const REVEAL_AT_SEC = 60;
+const REVEAL_AT_SEC = 55;
 
 export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const [visible, setVisible] = useState(false); // hidden during SSR/initial paint
@@ -94,11 +94,13 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
       meta: { q: qIndex + 1, answer: option },
     });
     setStage(`answered_q${qIndex + 1}`);
-    setStep(Math.max(step, qIndex + 1));
+    // Reveal the NEXT question (or unlock the continue button when all answered)
+    setStep((prev) => Math.max(prev, qIndex + 2));
     setTimeout(() => {
-      const el = document.getElementById(`quiz-q-${qIndex + 1}`);
+      const target = qIndex + 1 < QUESTIONS.length ? qIndex + 2 : qIndex + 1;
+      const el = document.getElementById(`quiz-q-${target}`);
       el?.scrollIntoView({ behavior: "smooth", block: "center" });
-    }, 100);
+    }, 150);
   };
 
   const finish = (reason: "button" | "video_end") => {
@@ -118,6 +120,10 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
       setStage("reached_offer");
       track({ type: "reached_offer" });
       onFinish();
+      // Scroll to top of the revealed site
+      requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      });
     }, 2600);
   };
 
@@ -207,18 +213,44 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                   ref={videoRef}
                   src={videoAsset.url}
                   controls
-                  controlsList="nodownload noplaybackrate noremoteplayback"
+                  controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
                   disablePictureInPicture
+                  disableRemotePlayback
                   playsInline
+                  preload="auto"
                   onTimeUpdate={onTimeUpdate}
                   onSeeking={onSeeking}
                   onEnded={onEnded}
                   onPlay={onPlay}
+                  onRateChange={() => {
+                    const v = videoRef.current;
+                    if (v && v.playbackRate !== 1) v.playbackRate = 1;
+                  }}
                   className="block h-auto w-full rounded-xl bg-black"
                 />
               </div>
 
               <div ref={quizAnchorRef} className="mt-8 space-y-5 sm:mt-10">
+                {step > 0 && (
+                  <div className="mx-auto flex max-w-md items-center justify-center gap-2">
+                    {QUESTIONS.map((_, i) => {
+                      const active = step > i;
+                      const done = QUESTIONS[i] && answers[QUESTIONS[i].key];
+                      return (
+                        <div
+                          key={i}
+                          className={`h-2 flex-1 rounded-full transition-all ${
+                            done
+                              ? "bg-success"
+                              : active
+                              ? "bg-gradient-to-r from-[oklch(0.65_0.27_300)] to-[oklch(0.74_0.22_50)]"
+                              : "bg-white/10"
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
                 <AnimatePresence>
                   {QUESTIONS.slice(0, step).map((q, i) => (
                     <motion.div
@@ -227,29 +259,42 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
-                      className="glass rounded-2xl p-5 sm:p-6"
+                      className="glass rounded-2xl p-5 shadow-[var(--shadow-elegant)] ring-1 ring-white/10 sm:p-7"
                     >
-                      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                        Pergunta {i + 1} de 3
+                      <p className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[oklch(0.65_0.27_300/0.25)] to-[oklch(0.74_0.22_50/0.25)] px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-foreground/90 ring-1 ring-white/10">
+                        Pergunta {i + 1} de {QUESTIONS.length}
                       </p>
-                      <h3 className="mt-1.5 text-base font-bold text-foreground sm:text-lg">
+                      <h3 className="mt-3 text-lg font-extrabold leading-snug text-foreground sm:text-xl">
                         {q.label}
                       </h3>
-                      <div className="mt-4 grid gap-2.5">
+                      <div className="mt-5 grid gap-3">
                         {q.options.map((opt) => {
                           const selected = answers[q.key] === opt;
+                          const emojiMatch = opt.match(/^(\p{Extended_Pictographic}+)\s*/u);
+                          const emoji = emojiMatch ? emojiMatch[1] : "";
+                          const rest = emoji ? opt.slice(emojiMatch![0].length) : opt;
                           return (
-                            <button
+                            <motion.button
                               key={opt}
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
                               onClick={() => handleAnswer(i, opt)}
-                              className={`w-full rounded-xl border px-4 py-3 text-left text-sm font-medium leading-snug transition-all ${
+                              className={`group relative flex w-full items-center gap-3 rounded-xl border-2 px-4 py-4 text-left text-base font-semibold leading-snug transition-all sm:text-base ${
                                 selected
-                                  ? "border-success/60 bg-success/15 text-foreground"
-                                  : "border-white/10 bg-white/[0.03] text-foreground/85 hover:border-white/20 hover:bg-white/[0.06]"
+                                  ? "border-success bg-gradient-to-r from-success/25 to-success/10 text-foreground shadow-[0_0_24px_-6px_oklch(0.78_0.2_155/0.7)]"
+                                  : "border-white/10 bg-white/[0.04] text-foreground/90 hover:border-[oklch(0.65_0.27_300/0.6)] hover:bg-gradient-to-r hover:from-[oklch(0.65_0.27_300/0.12)] hover:to-[oklch(0.74_0.22_50/0.08)]"
                               }`}
                             >
-                              {opt}
-                            </button>
+                              {emoji && (
+                                <span className="text-2xl leading-none sm:text-3xl">{emoji}</span>
+                              )}
+                              <span className="flex-1">{rest || opt}</span>
+                              {selected && (
+                                <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-success text-success-foreground">
+                                  <Check className="h-4 w-4" strokeWidth={3} />
+                                </span>
+                              )}
+                            </motion.button>
                           );
                         })}
                       </div>

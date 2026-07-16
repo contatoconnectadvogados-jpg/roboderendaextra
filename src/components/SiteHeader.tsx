@@ -20,7 +20,7 @@ export function SiteHeader() {
           <a href="#preco" className="transition-colors hover:text-foreground">Preço</a>
         </nav>
         <div className="flex-shrink-0">
-          <CheckoutButton size="md" variant="cta" label="header" className="!w-auto whitespace-nowrap">
+          <CheckoutButton size="md" variant="cta" label="header" scrollTo="#preco" className="!w-auto whitespace-nowrap">
             <span className="hidden sm:inline">Começar agora</span>
             <span className="sm:hidden">Começar</span>
           </CheckoutButton>
