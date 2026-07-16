@@ -15,6 +15,7 @@ export function CheckoutButton({
   label,
   className,
   pulse = false,
+  scrollTo,
 }: {
   children: ReactNode;
   variant?: Variant;
@@ -22,6 +23,7 @@ export function CheckoutButton({
   label: string;
   className?: string;
   pulse?: boolean;
+  scrollTo?: string;
 }) {
   const { checkoutUrl } = useSiteConfig();
 
@@ -35,6 +37,36 @@ export function CheckoutButton({
   const shadow =
     variant === "success" ? "" : "shadow-[var(--shadow-cta)]";
 
+  const commonClasses = cn(
+    "group inline-flex w-full items-center justify-center gap-2 rounded-xl text-center font-bold leading-tight transition-shadow",
+    sizeClasses,
+    fg,
+    shadow,
+    pulse && "animate-pulse-glow",
+    className,
+  );
+
+  if (scrollTo) {
+    return (
+      <motion.button
+        type="button"
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        onClick={(e) => {
+          e.preventDefault();
+          track({ type: "click", label });
+          const el = document.querySelector(scrollTo);
+          if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
+        className={commonClasses}
+        style={{ background: bg }}
+      >
+        <span className="min-w-0 text-center leading-tight">{children}</span>
+        <ArrowRight className="h-5 w-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
+      </motion.button>
+    );
+  }
+
   return (
     <motion.a
       whileHover={{ scale: 1.03 }}
@@ -43,14 +75,7 @@ export function CheckoutButton({
       target="_blank"
       rel="noopener noreferrer"
       onClick={() => track({ type: "checkout_click", label })}
-      className={cn(
-        "group inline-flex w-full items-center justify-center gap-2 rounded-xl text-center font-bold leading-tight transition-shadow",
-        sizeClasses,
-        fg,
-        shadow,
-        pulse && "animate-pulse-glow",
-        className,
-      )}
+      className={commonClasses}
       style={{ background: bg }}
     >
       <span className="min-w-0 text-center leading-tight">{children}</span>
