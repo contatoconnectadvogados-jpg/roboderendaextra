@@ -386,6 +386,7 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                   ))}
 
                 {step >= 3 && answers.goal && (
+                  <button
                     onClick={() => finish("button")}
                     className="group mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-xl px-6 py-4 text-base font-bold leading-tight text-cta-foreground shadow-[var(--shadow-cta)] transition-transform duration-150 hover:scale-[1.02]"
                     style={{ background: "var(--gradient-cta)" }}

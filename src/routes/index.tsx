@@ -6,7 +6,7 @@ import {
   ChevronDown, Bot, Heart, Users, Lock, Headphones, RefreshCw,
 } from "lucide-react";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
@@ -36,24 +36,28 @@ const fadeUp = {
 };
 
 function Index() {
-  const [, force] = useState(0);
+  const [gateDone, setGateDone] = useState(false);
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <VideoQuizGate onFinish={() => force((n) => n + 1)} />
+      <VideoQuizGate onFinish={() => setGateDone(true)} />
       <PixelAndTracking />
-      <SiteHeader />
-      <TopNotificationBar />
-      <Hero />
-      <NotificationBar />
-      <ComparisonSection />
-      <HowItWorks />
-      <Manifesto />
-      <ForWhom />
-      <Benefits />
-      <Testimonials />
-      <FAQ />
-      <Pricing />
-      <Footer />
+      {gateDone && (
+        <>
+          <SiteHeader />
+          <TopNotificationBar />
+          <Hero />
+          <NotificationBar />
+          <ComparisonSection />
+          <HowItWorks />
+          <Manifesto />
+          <ForWhom />
+          <Benefits />
+          <Testimonials />
+          <FAQ />
+          <Pricing />
+          <Footer />
+        </>
+      )}
     </div>
   );
 }
