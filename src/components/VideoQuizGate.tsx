@@ -5,7 +5,6 @@ import {
   EMPTY,
   completeGate,
   isGateCompleted,
-  readAnswers,
   writeAnswers,
   type QuizAnswers,
 } from "@/lib/quiz-state";
@@ -64,7 +63,6 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
   const quizAnchorRef = useRef<HTMLDivElement | null>(null);
   const progressBarRef = useRef<HTMLDivElement | null>(null);
   const maxWatchedRef = useRef(0);
-  const currentTimeRef = useRef(0);
   const progressReportedRef = useRef(0);
   const questionRevealedRef = useRef(false);
   const finishedRef = useRef(false);
@@ -158,7 +156,6 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
       const v = videoRef.current;
       if (!v || endedRef.current) return;
       const current = v.currentTime || 0;
-      currentTimeRef.current = current;
       if (current > maxWatchedRef.current) maxWatchedRef.current = current;
       if (v.duration && progressBarRef.current) {
         progressBarRef.current.style.width = `${Math.min(100, (current / v.duration) * 100)}%`;
