@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight, CheckCircle2, Check, Play, Pause } from "lucide-react";
 import videoAsset from "@/assets/vsl-robovendas.mp4.asset.json";
+import videoWebmAsset from "@/assets/vsl-robovendas.webm.asset.json";
 import {
   EMPTY,
   completeGate,
@@ -283,7 +284,6 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                 >
                   <video
                     ref={videoRef}
-                    src={videoAsset.url}
                     playsInline
                     preload="auto"
                     poster=""
@@ -301,7 +301,10 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                     }}
                     className="block h-auto w-full select-none bg-black"
                     style={{ pointerEvents: "auto" }}
-                  />
+                  >
+                    <source src={videoWebmAsset.url} type="video/webm" />
+                    <source src={videoAsset.url} type="video/mp4" />
+                  </video>
                   {/* Invisible overlay to block right-click / long-press UI on the video area */}
                   <div
                     className="pointer-events-none absolute inset-0"
