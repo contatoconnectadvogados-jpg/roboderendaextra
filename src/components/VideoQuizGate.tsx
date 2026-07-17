@@ -185,16 +185,6 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
     return () => window.clearInterval(interval);
   }, [visible]);
 
-  const onTimeUpdate = () => {
-    const v = videoRef.current;
-    if (!v) return;
-    currentTimeRef.current = v.currentTime || currentTimeRef.current;
-    if (v.currentTime > maxWatchedRef.current) maxWatchedRef.current = v.currentTime;
-    if (v.duration && progressBarRef.current) {
-      progressBarRef.current.style.width = `${Math.min(100, (v.currentTime / v.duration) * 100)}%`;
-    }
-  };
-
   const onSeeking = () => {
     const v = videoRef.current;
     if (!v) return;
@@ -303,7 +293,6 @@ export function VideoQuizGate({ onFinish }: { onFinish: () => void }) {
                     disablePictureInPicture
                     disableRemotePlayback
                     controlsList="nodownload noplaybackrate noremoteplayback nofullscreen"
-                    onTimeUpdate={onTimeUpdate}
                     onSeeking={onSeeking}
                     onEnded={onEnded}
                     onPlay={onPlay}
