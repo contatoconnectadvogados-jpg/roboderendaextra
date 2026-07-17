@@ -6,7 +6,7 @@ import {
   ChevronDown, Bot, Heart, Users, Lock, Headphones, RefreshCw,
 } from "lucide-react";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NotificationBar, TopNotificationBar } from "@/components/NotificationBar";
 import { DashboardMock } from "@/components/DashboardMock";
