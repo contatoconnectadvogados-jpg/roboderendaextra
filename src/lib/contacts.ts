@@ -128,10 +128,22 @@ export function captureIdentityFromURL() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
-    const u = url.searchParams.get("u") || url.searchParams.get("ref");
-    if (!u) return;
-    const id = decodeRef(u);
-    if (id) saveIdentity(id);
+    const u = url.searchParams.get("u");
+    if (u) {
+      const id = decodeRef(u);
+      if (id) saveIdentity(id);
+      return;
+    }
+    const legacy = url.searchParams.get("ref");
+    if (legacy) {
+      const decoded = b64urlDecode(legacy);
+      try {
+        const obj = JSON.parse(decoded);
+        if (obj && typeof obj.n === "string") {
+          saveIdentity({ code: obj.c || "", name: obj.n, phone: obj.p || "" });
+        }
+      } catch {}
+    }
   } catch {}
 }
 
