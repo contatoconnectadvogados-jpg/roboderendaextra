@@ -72,25 +72,42 @@ export function upsertContact(name: string, phone: string): Contact {
   return c;
 }
 
+function slugifyName(name: string): string {
+  return name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function unslugify(slug: string): string {
+  return slug
+    .split("-")
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+}
+
 export function encodeRef(c: Contact): string {
-  return b64urlEncode(JSON.stringify({ c: c.code, n: c.name, p: c.phone }));
+  return slugifyName(c.name);
 }
 
 export function buildTrackableLink(origin: string, c: Contact) {
-  return `${origin.replace(/\/$/, "")}/?ref=${encodeRef(c)}`;
+  const slug = slugifyName(c.name);
+  return `${origin.replace(/\/$/, "")}/?u=${slug}`;
 }
 
 export function decodeRef(raw: string): Identity | null {
   if (!raw) return null;
-  const decoded = b64urlDecode(raw);
-  if (!decoded) return null;
-  try {
-    const obj = JSON.parse(decoded);
-    if (obj && typeof obj.c === "string" && typeof obj.n === "string" && typeof obj.p === "string") {
-      return { code: obj.c, name: obj.n, phone: obj.p };
-    }
-  } catch {}
-  return null;
+  const slug = slugifyName(raw);
+  if (!slug) return null;
+  const match = readContacts().find((c) => slugifyName(c.name) === slug);
+  if (match) return { code: match.code, name: match.name, phone: match.phone };
+  return { code: slug, name: unslugify(slug), phone: "" };
 }
 
 export function readIdentity(): Identity | null {
@@ -106,15 +123,27 @@ export function saveIdentity(id: Identity) {
   localStorage.setItem(IDENTITY_KEY, JSON.stringify(id));
 }
 
-/** Reads ?ref= from URL, decodes, persists to localStorage. Idempotent. */
+/** Reads ?u= (or legacy ?ref=) from URL, decodes, persists to localStorage. Idempotent. */
 export function captureIdentityFromURL() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
-    const ref = url.searchParams.get("ref");
-    if (!ref) return;
-    const id = decodeRef(ref);
-    if (id) saveIdentity(id);
+    const u = url.searchParams.get("u");
+    if (u) {
+      const id = decodeRef(u);
+      if (id) saveIdentity(id);
+      return;
+    }
+    const legacy = url.searchParams.get("ref");
+    if (legacy) {
+      const decoded = b64urlDecode(legacy);
+      try {
+        const obj = JSON.parse(decoded);
+        if (obj && typeof obj.n === "string") {
+          saveIdentity({ code: obj.c || "", name: obj.n, phone: obj.p || "" });
+        }
+      } catch {}
+    }
   } catch {}
 }
 
