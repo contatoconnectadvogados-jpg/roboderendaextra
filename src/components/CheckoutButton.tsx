@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { useSiteConfig } from "@/lib/site-config";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+import { InAppBrowserModal, isInAppBrowser, tryOpenExternal } from "@/components/InAppBrowserModal";
 
 type Variant = "cta" | "success";
 type Size = "md" | "lg";
@@ -26,6 +27,7 @@ export function CheckoutButton({
   scrollTo?: string;
 }) {
   const { checkoutUrl } = useSiteConfig();
+  const [showModal, setShowModal] = useState(false);
 
   const sizeClasses =
     size === "lg" ? "px-7 py-4 text-base" : "px-5 py-2.5 text-sm";
@@ -68,19 +70,35 @@ export function CheckoutButton({
   }
 
   return (
-    <motion.a
-      whileHover={{ scale: 1.03 }}
-      whileTap={{ scale: 0.97 }}
-      href={checkoutUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={() => track({ type: "checkout_click", label })}
-      className={commonClasses}
-      style={{ background: bg }}
-    >
-      <span className="min-w-0 text-center leading-tight">{children}</span>
-      <ArrowRight className="h-5 w-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
-    </motion.a>
+    <>
+      <motion.a
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        href={checkoutUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={(e) => {
+          track({ type: "checkout_click", label });
+          if (typeof window !== "undefined" && isInAppBrowser()) {
+            e.preventDefault();
+            const opened = tryOpenExternal(checkoutUrl);
+            // Always show fallback modal after a short delay in case the
+            // external launch was silently blocked (common on iOS).
+            window.setTimeout(() => {
+              if (!document.hidden) setShowModal(true);
+            }, opened ? 1500 : 0);
+          }
+        }}
+        className={commonClasses}
+        style={{ background: bg }}
+      >
+        <span className="min-w-0 text-center leading-tight">{children}</span>
+        <ArrowRight className="h-5 w-5 flex-shrink-0 transition-transform group-hover:translate-x-1" />
+      </motion.a>
+      {showModal && (
+        <InAppBrowserModal url={checkoutUrl} onClose={() => setShowModal(false)} />
+      )}
+    </>
   );
 }
 

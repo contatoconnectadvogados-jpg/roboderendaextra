@@ -6,7 +6,7 @@ export type SiteConfig = {
 };
 
 export const DEFAULT_CONFIG: SiteConfig = {
-  checkoutUrl: "https://pay.kiwify.com.br/9MUsEuh",
+  checkoutUrl: "https://pay.kiwify.com.br/7E0BNbM",
   pixelId: "",
 };
 

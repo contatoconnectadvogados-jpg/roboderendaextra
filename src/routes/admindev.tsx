@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Bot, Settings as SettingsIcon, BarChart3, Save, Eye, MousePointerClick, ShoppingCart, TrendingUp, Activity, Trash2, Link as LinkIcon, Tag, PlayCircle, ListChecks, MessageCircle, Copy, Check as CheckIcon, Search } from "lucide-react";
 import { getConfig, saveConfig, useSiteConfig, DEFAULT_CONFIG } from "@/lib/site-config";
 import { clearAnalytics, computeFunnel, computeMetrics, computeVisitors, useAnalytics } from "@/lib/analytics";
@@ -394,6 +394,10 @@ function SettingsPanel() {
   const [pixelId, setPixelId] = useState(current.pixelId);
   const [checkoutUrl, setCheckoutUrl] = useState(current.checkoutUrl);
   const [saved, setSaved] = useState(false);
+
+  // Sync form when config loads/updates from localStorage (SSR-safe hydration)
+  useEffect(() => { setPixelId(current.pixelId); }, [current.pixelId]);
+  useEffect(() => { setCheckoutUrl(current.checkoutUrl); }, [current.checkoutUrl]);
 
   return SettingsPanelInner({ current, pixelId, setPixelId, checkoutUrl, setCheckoutUrl, saved, setSaved });
 }
