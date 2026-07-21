@@ -22,8 +22,8 @@ export const Route = createFileRoute("/")({
   component: Index,
   head: () => ({
     meta: [
-      { title: "RoboVendas.IA — Robô de Vendas Automáticas com IA para Vida Real" },
-      { name: "description", content: "O primeiro robô de vendas com IA focado em resultados reais. Transforme cliques em campanhas profissionais sem promessas vazias. Estabilidade e lucro de verdade." },
+      { title: "Seu Robô de Lucro —  RoboVendas.IA" },
+      { name: "description", content: "O primeiro robô de vendas com IA. Transforme cliques em campanhas profissionais sem promessas vazias. Estabilidade e lucro de verdade." },
     ],
   }),
 });
