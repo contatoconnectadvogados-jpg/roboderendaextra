@@ -82,8 +82,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Seu Robô de Lucro — RoboVendas.IA" },
       { name: "twitter:description", content: "Apenas 5 MINUTOS, esse é o tempo que você gasta para colocar no ar. Sem configuração, sem BM, sem cursos e ebook. Seu Gestor Humano e IA na palma da sua mão!" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0bd73d98-3018-4d19-9c4d-3ee110a36169/id-preview-7ecc69dc--a23b4819-b5fe-4efb-8929-b0fa705a42fe.lovable.app-1779252823719.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0bd73d98-3018-4d19-9c4d-3ee110a36169/id-preview-7ecc69dc--a23b4819-b5fe-4efb-8929-b0fa705a42fe.lovable.app-1779252823719.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Dei8ls5zJRT88xMJ3hiwW1ixzfw2/social-images/social-1784606914010-WhatsApp_Image_2026-07-21_at_01.03.41.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/Dei8ls5zJRT88xMJ3hiwW1ixzfw2/social-images/social-1784606914010-WhatsApp_Image_2026-07-21_at_01.03.41.webp" },
     ],
     links: [
       {
