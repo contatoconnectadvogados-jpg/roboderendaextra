@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { readIdentity, type Identity } from "@/lib/contacts";
+import { supabase } from "@/integrations/supabase/client";
 
 export type AnalyticsEventType =
   | "pageview"
@@ -25,25 +26,7 @@ export type AnalyticsEvent = {
   meta?: Record<string, unknown>;
 };
 
-const KEY = "rv_analytics_v1";
-const EVENT = "rv-analytics-changed";
 const SESSION_KEY = "rv_session_id";
-const MAX = 5000;
-
-function read(): AnalyticsEvent[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function write(list: AnalyticsEvent[]) {
-  const trimmed = list.slice(-MAX);
-  localStorage.setItem(KEY, JSON.stringify(trimmed));
-  window.dispatchEvent(new CustomEvent(EVENT));
-}
 
 export function getSessionId(): string {
   if (typeof window === "undefined") return "ssr";
@@ -61,10 +44,26 @@ export function getSessionId(): string {
 
 export function track(ev: Omit<AnalyticsEvent, "ts" | "sessionId">) {
   if (typeof window === "undefined") return;
-  const list = read();
   const identity = ev.identity ?? readIdentity();
-  list.push({ ...ev, ts: Date.now(), sessionId: getSessionId(), identity });
-  write(list);
+  const sessionId = getSessionId();
+
+  const row = {
+    type: ev.type,
+    ts: Date.now(),
+    path: ev.path ?? window.location.pathname,
+    label: ev.label ?? null,
+    session_id: sessionId,
+    identity: identity ?? null,
+    meta: ev.meta ?? null,
+  };
+
+  // Fire-and-forget: não bloqueia a interface esperando a resposta do banco
+  supabase
+    .from("analytics_events")
+    .insert(row)
+    .then(({ error }) => {
+      if (error) console.error("[analytics] erro ao salvar evento:", error);
+    });
 
   const w = window as any;
   if (typeof w.fbq === "function") {
@@ -81,22 +80,50 @@ export function setStage(stage: string) {
   track({ type: "stage", label: stage });
 }
 
-export function clearAnalytics() {
-  write([]);
+export async function clearAnalytics() {
+  const { error } = await supabase
+    .from("analytics_events")
+    .delete()
+    .not("session_id", "is", null);
+  if (error) console.error("[analytics] erro ao limpar dados:", error);
 }
+
+function mapRow(r: any): AnalyticsEvent {
+  return {
+    type: r.type,
+    ts: Number(r.ts),
+    path: r.path ?? undefined,
+    label: r.label ?? undefined,
+    sessionId: r.session_id,
+    identity: r.identity ?? null,
+    meta: r.meta ?? undefined,
+  };
+}
+
+const POLL_MS = 4000;
 
 export function useAnalytics() {
   const [list, setList] = useState<AnalyticsEvent[]>([]);
-  useEffect(() => {
-    setList(read());
-    const h = () => setList(read());
-    window.addEventListener(EVENT, h);
-    window.addEventListener("storage", h);
-    return () => {
-      window.removeEventListener(EVENT, h);
-      window.removeEventListener("storage", h);
-    };
+
+  const refetch = useCallback(async () => {
+    const { data, error } = await supabase
+      .from("analytics_events")
+      .select("*")
+      .order("ts", { ascending: true })
+      .limit(5000);
+    if (error) {
+      console.error("[analytics] erro ao buscar eventos:", error);
+      return;
+    }
+    setList((data || []).map(mapRow));
   }, []);
+
+  useEffect(() => {
+    refetch();
+    const interval = setInterval(refetch, POLL_MS);
+    return () => clearInterval(interval);
+  }, [refetch]);
+
   return list;
 }
 
@@ -148,9 +175,8 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
     const i = STAGE_ORDER.indexOf(s);
     return i < 0 ? -1 : i;
   };
-  // Sort events chronologically for reliable segment timing
   const sorted = [...list].sort((a, b) => a.ts - b.ts);
-  const lastEvByStage = new Map<string, AnalyticsEvent | null>();
+
   for (const ev of list) {
     const sid = ev.sessionId || "unknown";
     let row = map.get(sid);
@@ -206,7 +232,6 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
     }
   }
 
-  // Compute per-section time by walking events per session in order.
   const bySession = new Map<string, AnalyticsEvent[]>();
   for (const ev of sorted) {
     const sid = ev.sessionId || "unknown";
@@ -220,7 +245,7 @@ export function computeVisitors(list: AnalyticsEvent[]): VisitorRow[] {
     let lastTs = evs[0]?.ts ?? row.firstSeen;
     const bump = (until: number) => {
       const dt = Math.max(0, until - lastTs);
-      if (dt > 10 * 60_000) return; // ignore >10min idle gaps
+      if (dt > 10 * 60_000) return;
       if (phase === "video") row.timeOnVideoMs += dt;
       else if (phase === "quiz") row.timeOnQuizMs += dt;
       else if (phase === "offer") row.timeOnOfferMs += dt;
