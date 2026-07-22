@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 export type Contact = {
   code: string;
@@ -7,28 +8,9 @@ export type Contact = {
   createdAt: number;
 };
 
-const KEY = "rv_contacts_v1";
-const EVENT = "rv-contacts-changed";
-const IDENTITY_KEY = "rv_identity_v1";
-
 export type Identity = { code: string; name: string; phone: string };
 
-function b64urlEncode(s: string) {
-  const b64 = typeof window === "undefined"
-    ? Buffer.from(s, "utf-8").toString("base64")
-    : btoa(unescape(encodeURIComponent(s)));
-  return b64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
-}
-function b64urlDecode(s: string) {
-  const pad = s.length % 4 === 0 ? "" : "=".repeat(4 - (s.length % 4));
-  const b64 = s.replace(/-/g, "+").replace(/_/g, "/") + pad;
-  try {
-    if (typeof window === "undefined") return Buffer.from(b64, "base64").toString("utf-8");
-    return decodeURIComponent(escape(atob(b64)));
-  } catch {
-    return "";
-  }
-}
+const IDENTITY_KEY = "rv_identity_v1";
 
 export function normalizePhone(p: string) {
   return p.replace(/[^\d+]/g, "");
@@ -41,73 +23,67 @@ function shortCode(): string {
   return out;
 }
 
-export function readContacts(): Contact[] {
-  if (typeof window === "undefined") return [];
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
-  } catch {
+function mapContactRow(r: any): Contact {
+  return {
+    code: r.code,
+    name: r.name,
+    phone: r.phone,
+    createdAt: new Date(r.created_at).getTime(),
+  };
+}
+
+export async function readContacts(): Promise<Contact[]> {
+  const { data, error } = await supabase
+    .from("contacts")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("[contacts] erro ao buscar contatos:", error);
     return [];
   }
-}
-function writeContacts(list: Contact[]) {
-  localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new CustomEvent(EVENT));
+  return (data || []).map(mapContactRow);
 }
 
-export function findContactByPhone(phone: string): Contact | undefined {
+export async function findContactByPhone(phone: string): Promise<Contact | undefined> {
   const norm = normalizePhone(phone);
-  return readContacts().find((c) => normalizePhone(c.phone) === norm);
+  const list = await readContacts();
+  return list.find((c) => normalizePhone(c.phone) === norm);
 }
 
-export function upsertContact(name: string, phone: string): Contact {
-  const existing = findContactByPhone(phone);
+export async function findContactByCode(code: string): Promise<Contact | null> {
+  const { data, error } = await supabase
+    .from("contacts")
+    .select("*")
+    .eq("code", code)
+    .maybeSingle();
+  if (error || !data) return null;
+  return mapContactRow(data);
+}
+
+export async function upsertContact(name: string, phone: string): Promise<Contact> {
+  const existing = await findContactByPhone(phone);
   if (existing) return existing;
+
   const c: Contact = {
     code: shortCode(),
     name: name.trim(),
     phone: phone.trim(),
     createdAt: Date.now(),
   };
-  writeContacts([c, ...readContacts()]);
+
+  const { error } = await supabase.from("contacts").insert({
+    code: c.code,
+    name: c.name,
+    phone: c.phone,
+    created_at: new Date(c.createdAt).toISOString(),
+  });
+  if (error) console.error("[contacts] erro ao salvar contato:", error);
+
   return c;
 }
 
-function slugifyName(name: string): string {
-  return name
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function unslugify(slug: string): string {
-  return slug
-    .split("-")
-    .filter(Boolean)
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
-
-export function encodeRef(c: Contact): string {
-  return slugifyName(c.name);
-}
-
 export function buildTrackableLink(origin: string, c: Contact) {
-  const slug = slugifyName(c.name);
-  return `${origin.replace(/\/$/, "")}/?u=${slug}`;
-}
-
-export function decodeRef(raw: string): Identity | null {
-  if (!raw) return null;
-  const slug = slugifyName(raw);
-  if (!slug) return null;
-  const match = readContacts().find((c) => slugifyName(c.name) === slug);
-  if (match) return { code: match.code, name: match.name, phone: match.phone };
-  return { code: slug, name: unslugify(slug), phone: "" };
+  return `${origin.replace(/\/$/, "")}/?ref=${c.code}`;
 }
 
 export function readIdentity(): Identity | null {
@@ -119,45 +95,41 @@ export function readIdentity(): Identity | null {
     return null;
   }
 }
+
 export function saveIdentity(id: Identity) {
   localStorage.setItem(IDENTITY_KEY, JSON.stringify(id));
 }
 
-/** Reads ?u= (or legacy ?ref=) from URL, decodes, persists to localStorage. Idempotent. */
-export function captureIdentityFromURL() {
+/** Lê ?ref=codigo da URL, busca o contato no Supabase, e salva a identidade localmente neste navegador. */
+export async function captureIdentityFromURL() {
   if (typeof window === "undefined") return;
   try {
     const url = new URL(window.location.href);
-    const u = url.searchParams.get("u");
-    if (u) {
-      const id = decodeRef(u);
-      if (id) saveIdentity(id);
-      return;
+    const ref = url.searchParams.get("ref");
+    if (!ref) return;
+    const contact = await findContactByCode(ref);
+    if (contact) {
+      saveIdentity({ code: contact.code, name: contact.name, phone: contact.phone });
     }
-    const legacy = url.searchParams.get("ref");
-    if (legacy) {
-      const decoded = b64urlDecode(legacy);
-      try {
-        const obj = JSON.parse(decoded);
-        if (obj && typeof obj.n === "string") {
-          saveIdentity({ code: obj.c || "", name: obj.n, phone: obj.p || "" });
-        }
-      } catch {}
-    }
-  } catch {}
+  } catch {
+    // silencioso — não deve travar o carregamento do site
+  }
 }
+
+const POLL_MS = 4000;
 
 export function useContacts(): Contact[] {
   const [list, setList] = useState<Contact[]>([]);
-  useEffect(() => {
-    setList(readContacts());
-    const h = () => setList(readContacts());
-    window.addEventListener(EVENT, h);
-    window.addEventListener("storage", h);
-    return () => {
-      window.removeEventListener(EVENT, h);
-      window.removeEventListener("storage", h);
-    };
+
+  const refetch = useCallback(() => {
+    readContacts().then(setList);
   }, []);
+
+  useEffect(() => {
+    refetch();
+    const interval = setInterval(refetch, POLL_MS);
+    return () => clearInterval(interval);
+  }, [refetch]);
+
   return list;
 }
