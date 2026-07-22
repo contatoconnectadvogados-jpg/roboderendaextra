@@ -117,8 +117,8 @@ function Dashboard() {
             <p className="text-xs text-muted-foreground">Atividade recente do site</p>
           </div>
           <button
-            onClick={() => {
-              if (confirm("Limpar todos os dados de analytics?")) clearAnalytics();
+            onClick={async () => {
+              if (confirm("Limpar todos os dados de analytics?")) await clearAnalytics();
             }}
             className="inline-flex items-center justify-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-1.5 text-xs font-semibold leading-tight text-destructive transition-colors hover:bg-destructive/20"
           >
@@ -395,7 +395,6 @@ function SettingsPanel() {
   const [checkoutUrl, setCheckoutUrl] = useState(current.checkoutUrl);
   const [saved, setSaved] = useState(false);
 
-  // Sync form when config loads/updates from localStorage (SSR-safe hydration)
   useEffect(() => { setPixelId(current.pixelId); }, [current.pixelId]);
   useEffect(() => { setCheckoutUrl(current.checkoutUrl); }, [current.checkoutUrl]);
 
@@ -432,10 +431,10 @@ function LinksPanel() {
     );
   }, [contacts, q]);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
-    const c = upsertContact(name, phone);
+    const c = await upsertContact(name, phone);
     setGenerated(c);
     setName("");
     setPhone("");
