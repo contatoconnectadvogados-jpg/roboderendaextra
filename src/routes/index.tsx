@@ -649,7 +649,7 @@ function Pricing() {
                 <div className="text-foreground">
                   <p className="text-sm">
                     + Mensalidade de{" "}
-                    <strong className="text-success" translate="no">R$ 99,90/mês</strong> a partir do 2º mês
+                    <strong className="text-success" translate="no">R$ 97,00/mês</strong> a partir do 2º mês
                   </p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     (cobre manutenção do painel e otimização contínua da IA)
